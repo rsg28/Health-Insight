@@ -170,7 +170,7 @@ const ChartsScreen = ({ route, navigation }) => {
               <Ionicons name="information-circle-outline" size={24} color="rgba(255, 255, 255, 0.8)" />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}> View trends and patterns in your data</Text>
+          <Text style={[styles.subtitle, { color: 'white' }]}> View trends and patterns in your data</Text>
         </View>
         
         <View style={styles.metricsButtonContainer}>
