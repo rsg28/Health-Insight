@@ -10,12 +10,12 @@ import {
   StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const SettingsScreen = ({ navigation }) => {
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const [localStorageOnly, setLocalStorageOnly] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
   // Handle opening privacy policy
   const handleOpenPrivacyPolicy = () => {
@@ -28,13 +28,13 @@ const SettingsScreen = ({ navigation }) => {
 
   const renderSettingItem = (icon, title, description, value, onValueChange) => {
     return (
-      <View style={styles.settingItem}>
-        <View style={styles.settingIcon}>
+      <View style={[styles.settingItem, { backgroundColor: theme.colors.card }]}>
+        <View style={[styles.settingIcon, { backgroundColor: theme.colors.primaryLight }]}>
           <Ionicons name={icon} size={22} color={theme.colors.primary} />
         </View>
         <View style={styles.settingContent}>
-          <Text style={styles.settingTitle}>{title}</Text>
-          <Text style={styles.settingDescription}>{description}</Text>
+          <Text style={[styles.settingTitle, { color: theme.colors.text.primary }]}>{title}</Text>
+          <Text style={[styles.settingDescription, { color: theme.colors.text.secondary }]}>{description}</Text>
         </View>
         <Switch
           value={value}
@@ -48,16 +48,18 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.colors.primary} />
       
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
       
       <ScrollView style={styles.scrollView}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Privacy & Data</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary, borderBottomColor: theme.colors.border }]}>
+            Privacy & Data
+          </Text>
           
           {renderSettingItem(
             'lock-closed-outline',
@@ -67,7 +69,7 @@ const SettingsScreen = ({ navigation }) => {
             setLocalStorageOnly
           )}
           
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
           
           {renderSettingItem(
             'notifications-outline',
@@ -78,20 +80,24 @@ const SettingsScreen = ({ navigation }) => {
           )}
         </View>
         
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary, borderBottomColor: theme.colors.border }]}>
+            Appearance
+          </Text>
           
           {renderSettingItem(
             'moon-outline',
             'Dark Mode',
             'Switch between light and dark app theme',
-            darkModeEnabled,
-            setDarkModeEnabled
+            isDarkMode,
+            toggleTheme
           )}
         </View>
         
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Management</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary, borderBottomColor: theme.colors.border }]}>
+            Data Management
+          </Text>
           
           <TouchableOpacity 
             style={styles.actionButton}
@@ -101,8 +107,8 @@ const SettingsScreen = ({ navigation }) => {
               <Ionicons name="shield-outline" size={22} color={theme.colors.primary} />
             </View>
             <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Data Privacy Controls</Text>
-              <Text style={styles.actionDescription}>
+              <Text style={[styles.actionTitle, { color: theme.colors.text.primary }]}>Data Privacy Controls</Text>
+              <Text style={[styles.actionDescription, { color: theme.colors.text.secondary }]}>
                 Manage your data with granular privacy settings
               </Text>
             </View>
@@ -113,12 +119,12 @@ const SettingsScreen = ({ navigation }) => {
             style={styles.actionButton}
             onPress={() => navigation.navigate('HowItWorks')}
           >
-            <View style={[styles.actionIcon, { backgroundColor: '#E8F4FD' }]}>
-              <Ionicons name="information-circle-outline" size={22} color="#2980b9" />
+            <View style={[styles.actionIcon, { backgroundColor: isDarkMode ? '#1A3A4A' : '#E8F4FD' }]}>
+              <Ionicons name="information-circle-outline" size={22} color={isDarkMode ? '#4DB6F0' : '#2980b9'} />
             </View>
             <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>How This App Works</Text>
-              <Text style={styles.actionDescription}>
+              <Text style={[styles.actionTitle, { color: theme.colors.text.primary }]}>How This App Works</Text>
+              <Text style={[styles.actionDescription, { color: theme.colors.text.secondary }]}>
                 Learn how your data is used to generate insights
               </Text>
             </View>
@@ -126,8 +132,10 @@ const SettingsScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text.primary, borderBottomColor: theme.colors.border }]}>
+            About
+          </Text>
           
           <TouchableOpacity 
             style={styles.actionButton}
@@ -137,8 +145,8 @@ const SettingsScreen = ({ navigation }) => {
               <Ionicons name="shield-checkmark-outline" size={22} color={theme.colors.primary} />
             </View>
             <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Privacy Policy</Text>
-              <Text style={styles.actionDescription}>
+              <Text style={[styles.actionTitle, { color: theme.colors.text.primary }]}>Privacy Policy</Text>
+              <Text style={[styles.actionDescription, { color: theme.colors.text.secondary }]}>
                 Learn how we protect your data
               </Text>
             </View>
@@ -147,9 +155,9 @@ const SettingsScreen = ({ navigation }) => {
         </View>
         
         <View style={styles.appInfo}>
-          <Text style={styles.appName}>Health Insights App</Text>
-          <Text style={styles.appVersion}>Version 1.0.0</Text>
-          <Text style={styles.appCopyright}>© 2025 All Rights Reserved</Text>
+          <Text style={[styles.appName, { color: theme.colors.text.primary }]}>Health Insights App</Text>
+          <Text style={[styles.appVersion, { color: theme.colors.text.secondary }]}>Version 1.0.0</Text>
+          <Text style={[styles.appCopyright, { color: theme.colors.text.hint }]}>© 2025 All Rights Reserved</Text>
         </View>
       </ScrollView>
     </View>
@@ -159,10 +167,8 @@ const SettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
   header: {
-    backgroundColor: theme.colors.primary,
     paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -179,19 +185,20 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   section: {
-    backgroundColor: 'white',
     borderRadius: 12,
     marginBottom: 16,
     overflow: 'hidden',
-    ...theme.shadows.small,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.colors.text.primary,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
   },
   settingItem: {
     flexDirection: 'row',
@@ -202,7 +209,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: theme.colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -214,16 +220,13 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: theme.colors.text.primary,
     marginBottom: 2,
   },
   settingDescription: {
     fontSize: 13,
-    color: theme.colors.text.secondary,
   },
   divider: {
     height: 1,
-    backgroundColor: theme.colors.border,
     marginLeft: 68,
   },
   actionButton: {
@@ -246,12 +249,10 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: theme.colors.text.primary,
     marginBottom: 2,
   },
   actionDescription: {
     fontSize: 13,
-    color: theme.colors.text.secondary,
   },
   appInfo: {
     alignItems: 'center',
@@ -261,16 +262,13 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: theme.colors.text.primary,
   },
   appVersion: {
     fontSize: 14,
-    color: theme.colors.text.secondary,
     marginTop: 4,
   },
   appCopyright: {
     fontSize: 12,
-    color: theme.colors.text.hint,
     marginTop: 8,
   }
 });

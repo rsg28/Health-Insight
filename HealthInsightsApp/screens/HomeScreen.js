@@ -12,9 +12,10 @@ import { Ionicons } from '@expo/vector-icons';
 import HealthMetricCard from '../components/HealthMetricCard';
 import { getAllHealthData } from '../utils/storage';
 import { calculateDailyAverages } from '../utils/dataUtils';
-import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const HomeScreen = ({ navigation }) => {
+  const { theme, isDarkMode } = useTheme();
   const [healthData, setHealthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [todayData, setTodayData] = useState(null);
@@ -54,8 +55,8 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.colors.primary} />
       
       <ScrollView 
         style={styles.scrollView}
@@ -69,7 +70,7 @@ const HomeScreen = ({ navigation }) => {
           />
         }
       >
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
           <View style={styles.headerContent}>
             <View>
               <Text style={styles.greeting}>Hello!</Text>
@@ -84,21 +85,21 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
         
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Your Health Summary</Text>
+        <View style={[styles.summaryCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.summaryTitle, { color: theme.colors.text.primary }]}>Your Health Summary</Text>
           
           <View style={styles.summaryContent}>
             {healthData.length > 0 ? (
-              <Text style={styles.summaryText}>
+              <Text style={[styles.summaryText, { color: theme.colors.text.secondary }]}>
                 You've tracked your health for {healthData.length} {healthData.length === 1 ? 'day' : 'days'}.
               </Text>
             ) : (
-              <Text style={styles.summaryText}>Start tracking your health today!</Text>
+              <Text style={[styles.summaryText, { color: theme.colors.text.secondary }]}>Start tracking your health today!</Text>
             )}
           </View>
           
           <TouchableOpacity 
-            style={styles.addButton}
+            style={[styles.addButton, { backgroundColor: theme.colors.secondary }]}
             onPress={() => navigation.navigate('DataEntry')}
           >
             <Ionicons name="add-circle" size={20} color="white" />
@@ -108,17 +109,17 @@ const HomeScreen = ({ navigation }) => {
         
         {healthData.length === 0 ? (
           <View style={styles.emptyState}>
-            <View style={styles.emptyStateIcon}>
+            <View style={[styles.emptyStateIcon, { backgroundColor: theme.colors.primaryLight }]}>
               <Ionicons name="fitness-outline" size={80} color={theme.colors.primary} />
             </View>
-            <Text style={styles.emptyStateTitle}>No health data yet</Text>
-            <Text style={styles.emptyStateText}>
+            <Text style={[styles.emptyStateTitle, { color: theme.colors.text.primary }]}>No health data yet</Text>
+            <Text style={[styles.emptyStateText, { color: theme.colors.text.secondary }]}>
               Add your first entry to start tracking your health journey
             </Text>
           </View>
         ) : (
           <View style={styles.metricsContainer}>
-            <Text style={styles.sectionTitle}>Today's Metrics</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text.primary }]}>Today's Metrics</Text>
             
             <View style={styles.metricsGrid}>
               <HealthMetricCard
@@ -161,18 +162,18 @@ const HomeScreen = ({ navigation }) => {
             </View>
             
             <TouchableOpacity 
-              style={styles.insightsButton}
+              style={[styles.insightsButton, { backgroundColor: theme.colors.primaryLight }]}
               onPress={() => navigation.navigate('ChartsTab')}
             >
-              <Text style={styles.insightsButtonText}>View All Insights</Text>
+              <Text style={[styles.insightsButtonText, { color: theme.colors.primary }]}>View All Insights</Text>
               <Ionicons name="arrow-forward" size={18} color={theme.colors.primary} />
             </TouchableOpacity>
           </View>
         )}
         
-        <View style={styles.privacyNote}>
+        <View style={[styles.privacyNote, { backgroundColor: theme.colors.divider }]}>
           <Ionicons name="shield-checkmark-outline" size={22} color={theme.colors.text.hint} />
-          <Text style={styles.privacyText}>
+          <Text style={[styles.privacyText, { color: theme.colors.text.secondary }]}>
             Your health data is stored locally on your device for privacy.
           </Text>
         </View>
@@ -184,36 +185,34 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: theme.spacing.xl,
+    paddingBottom: 52,
   },
   header: {
-    backgroundColor: theme.colors.primary,
-    paddingTop: theme.spacing.xl ,
-    paddingBottom: theme.spacing.xl - 30,
-    borderBottomLeftRadius: theme.borderRadius.l,
-    borderBottomRightRadius: theme.borderRadius.l,
+    paddingTop: 52,
+    paddingBottom: 22,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.l,
+    paddingHorizontal: 24,
   },
   greeting: {
-    fontSize: theme.typography.sizes.h1,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.light,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
   },
   date: {
-    fontSize: theme.typography.sizes.caption,
+    fontSize: 14,
     color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: theme.spacing.xs,
+    marginTop: 4,
   },
   profileButton: {
     width: 48,
@@ -223,111 +222,106 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   summaryCard: {
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.borderRadius.l,
-    padding: theme.spacing.l,
-    marginHorizontal: theme.spacing.m,
-    marginTop: -theme.spacing.l + 40,
-    ...theme.shadows.medium,
+    borderRadius: 16,
+    padding: 24,
+    marginHorizontal: 16,
+    marginTop: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   summaryTitle: {
-    fontSize: theme.typography.sizes.h3,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.s,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   summaryContent: {
-    paddingVertical: theme.spacing.m,
+    paddingVertical: 16,
   },
   summaryText: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    fontSize: 16,
     textAlign: 'center',
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.secondary,
-    padding: theme.spacing.m,
-    borderRadius: theme.borderRadius.s,
-    marginTop: theme.spacing.s,
+    padding: 16,
+    borderRadius: 8,
+    marginTop: 8,
   },
   addButtonText: {
-    color: theme.colors.text.light,
-    fontWeight: theme.typography.fontWeights.medium,
-    marginLeft: theme.spacing.s,
+    color: 'white',
+    fontWeight: '500',
+    marginLeft: 8,
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: theme.spacing.xl,
-    marginTop: theme.spacing.xl,
+    padding: 52,
+    marginTop: 52,
   },
   emptyStateIcon: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: theme.colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: theme.spacing.l,
+    marginBottom: 24,
   },
   emptyStateTitle: {
-    fontSize: theme.typography.sizes.h2,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.s,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   emptyStateText: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
+    fontSize: 16,
     textAlign: 'center',
     lineHeight: 22,
   },
   metricsContainer: {
-    padding: theme.spacing.m,
-    marginTop: theme.spacing.l,
+    padding: 16,
+    marginTop: 24,
   },
   sectionTitle: {
-    fontSize: theme.typography.sizes.h3,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.primary,
-    marginBottom: theme.spacing.m,
-    paddingHorizontal: theme.spacing.s,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    paddingHorizontal: 8,
   },
   metricsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.m,
+    marginBottom: 16,
   },
   insightsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.primaryLight,
-    padding: theme.spacing.m,
-    borderRadius: theme.borderRadius.s,
-    marginTop: theme.spacing.m,
+    padding: 16,
+    borderRadius: 8,
+    marginTop: 16,
   },
   insightsButtonText: {
-    color: theme.colors.primary,
-    fontWeight: theme.typography.fontWeights.medium,
-    marginRight: theme.spacing.s,
+    fontWeight: '500',
+    marginRight: 8,
   },
   privacyNote: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.divider,
-    padding: theme.spacing.m,
-    marginHorizontal: theme.spacing.m,
-    marginTop: theme.spacing.l,
-    borderRadius: theme.borderRadius.s,
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 24,
+    borderRadius: 8,
   },
   privacyText: {
-    marginLeft: theme.spacing.s,
-    fontSize: theme.typography.sizes.caption,
-    color: theme.colors.text.secondary,
+    marginLeft: 8,
+    fontSize: 14,
     flex: 1,
   },
 });

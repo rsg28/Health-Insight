@@ -19,8 +19,10 @@ import FeedbackDialog from '../components/FeedbackDialog';
 import InsightSourceBadge from '../components/InsightSourceBadge';
 import ConfidenceIndicator from '../components/ConfidenceIndicator';
 import { saveUserFeedback } from '../utils/storage';
+import { useTheme } from '../utils/ThemeContext';
 
 const ChartsScreen = ({ route, navigation }) => {
+  const { theme, isDarkMode } = useTheme();
   const [healthData, setHealthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState(
@@ -144,8 +146,8 @@ const ChartsScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.colors.primary} />
       
       <ScrollView 
         style={styles.scrollView}
@@ -160,7 +162,7 @@ const ChartsScreen = ({ route, navigation }) => {
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <Text style={styles.title}>Health Insights</Text>
+            <Text style={[styles.title, { color: theme.colors.text.primary }]}>Health Insights</Text>
             <TouchableOpacity 
               style={styles.infoButton}
               onPress={() => navigation.navigate('HowItWorks')}
@@ -168,7 +170,7 @@ const ChartsScreen = ({ route, navigation }) => {
               <Ionicons name="information-circle-outline" size={24} color="rgba(255, 255, 255, 0.8)" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtitle}>View trends and patterns in your data</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text.secondary }]}> View trends and patterns in your data</Text>
         </View>
         
         <View style={styles.metricsButtonContainer}>
@@ -297,7 +299,7 @@ const ChartsScreen = ({ route, navigation }) => {
                 </Text>
               </View>
               
-              <View style={styles.divider} />
+              <View style={[styles.divider, { backgroundColor: theme.colors.divider }]}/>
               
               <View style={styles.confidenceRow}>
                 <InsightSourceBadge 

@@ -1,28 +1,35 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const ConfidenceIndicator = ({ level, dataPoints, onInfoPress }) => {
+  const { theme, isDarkMode } = useTheme();
+  
   const getConfidenceDetails = () => {
+    // Adjust colors for better visibility in dark mode
+    const highColor = isDarkMode ? '#5CDB95' : '#27ae60';
+    const mediumColor = isDarkMode ? '#FFD966' : '#f39c12';
+    const lowColor = isDarkMode ? '#FF7675' : '#e74c3c';
+    
     if (level >= 0.8) {
       return {
         label: 'High Confidence',
-        color: '#27ae60',
+        color: highColor,
         icon: 'checkmark-circle',
         bars: 3
       };
     } else if (level >= 0.5) {
       return {
         label: 'Medium Confidence',
-        color: '#f39c12',
+        color: mediumColor,
         icon: 'alert-circle',
         bars: 2
       };
     } else {
       return {
         label: 'Low Confidence',
-        color: '#e74c3c',
+        color: lowColor,
         icon: 'information-circle',
         bars: 1
       };
@@ -33,7 +40,7 @@ const ConfidenceIndicator = ({ level, dataPoints, onInfoPress }) => {
   
   return (
     <TouchableOpacity 
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
       onPress={() => onInfoPress(
         `This insight is based on ${dataPoints} data points. ` +
         `The confidence level (${Math.round(level * 100)}%) reflects how reliable ` +
@@ -63,12 +70,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.background,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: 'transparent', // Use transparent initially and let theme handle it
   },
   label: {
     fontSize: 12,

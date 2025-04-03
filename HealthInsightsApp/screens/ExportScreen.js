@@ -13,11 +13,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { getAllHealthData, exportHealthDataAsJSON, exportHealthDataAsCSV } from '../utils/storage';
 import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const ExportScreen = () => {
   const [healthData, setHealthData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const { theme, isDarkMode } = useTheme();
   // Load data on component mount
   useEffect(() => {
     loadData();
@@ -82,8 +83,8 @@ const ExportScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.colors.primary} />
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Export Your Data</Text>

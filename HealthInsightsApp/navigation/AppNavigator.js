@@ -1,8 +1,9 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../utils/ThemeContext';
 
 // Import screens
 import HomeScreen from '../screens/HomeScreen';
@@ -107,8 +108,44 @@ const SettingsStack = () => {
 
 // Main app navigation with bottom tabs
 const AppNavigator = () => {
+  const { theme, isDarkMode } = useTheme();
+  
+  // Create a custom theme that extends the default navigation theme
+  const customTheme = {
+    // Start with the appropriate base theme
+    ...(isDarkMode ? DarkTheme : DefaultTheme),
+    // Override with our custom colors
+    colors: {
+      primary: theme.colors.primary,
+      background: theme.colors.background,
+      card: theme.colors.card,
+      text: theme.colors.text.primary,
+      border: theme.colors.border,
+      notification: theme.colors.primary,
+    },
+    // These are the font properties React Navigation expects
+    fonts: {
+      regular: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      medium: {
+        fontFamily: 'System',
+        fontWeight: '500',
+      },
+      light: {
+        fontFamily: 'System',
+        fontWeight: '300',
+      },
+      thin: {
+        fontFamily: 'System',
+        fontWeight: '100',
+      },
+    },
+  };
+  
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={customTheme}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -126,8 +163,12 @@ const AppNavigator = () => {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#6200ee',
-          tabBarInactiveTintColor: 'gray',
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.text.hint,
+          tabBarStyle: {
+            backgroundColor: theme.colors.card,
+            borderTopColor: theme.colors.border,
+          },
           headerShown: false,
         })}
       >

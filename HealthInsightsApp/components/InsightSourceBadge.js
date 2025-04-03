@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const InsightSourceBadge = ({ source, onInfoPress }) => {
+  const { theme, isDarkMode } = useTheme();
+  
   const getSourceConfig = () => {
     switch (source) {
       case 'user_data':
@@ -17,14 +19,16 @@ const InsightSourceBadge = ({ source, onInfoPress }) => {
         return {
           icon: 'globe-outline',
           label: 'General Guideline',
-          color: '#8e44ad',
+          // Adjust purple to be more visible in dark mode
+          color: isDarkMode ? '#BD7CFF' : '#8e44ad',
           description: 'This insight is based on general health guidelines, not your specific data.'
         };
       case 'research':
         return {
           icon: 'school-outline',
           label: 'Research-Based',
-          color: '#2980b9',
+          // Adjust blue to be more visible in dark mode
+          color: isDarkMode ? '#64B5F6' : '#2980b9',
           description: 'This insight is based on peer-reviewed health research.'
         };
       default:

@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import theme from '../utils/theme';
+import { useTheme } from '../utils/ThemeContext';
 
 const HealthMetricCard = ({ title, value, unit, icon, color, onPress }) => {
+  const { theme, isDarkMode } = useTheme();
+  
   return (
     <TouchableOpacity 
-      style={styles.card} 
+      style={[styles.card, { backgroundColor: theme.colors.card }]} 
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -14,10 +16,10 @@ const HealthMetricCard = ({ title, value, unit, icon, color, onPress }) => {
         <Ionicons name={icon} size={24} color={color} />
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: theme.colors.text.secondary }]}>{title}</Text>
         <View style={styles.valueContainer}>
-          <Text style={styles.value}>{value}</Text>
-          {unit && <Text style={styles.unit}>{unit}</Text>}
+          <Text style={[styles.value, { color: theme.colors.text.primary }]}>{value}</Text>
+          {unit && <Text style={[styles.unit, { color: theme.colors.text.hint }]}>{unit}</Text>}
         </View>
       </View>
     </TouchableOpacity>
@@ -27,41 +29,44 @@ const HealthMetricCard = ({ title, value, unit, icon, color, onPress }) => {
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    backgroundColor: theme.colors.card,
-    borderRadius: theme.borderRadius.m,
-    padding: theme.spacing.m,
-    marginHorizontal: theme.spacing.xs,
-    ...theme.shadows.small,
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   iconContainer: {
     width: 48,
     height: 48,
-    borderRadius: theme.borderRadius.circle,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: theme.spacing.s,
+    marginBottom: 8,
   },
   contentContainer: {
     flex: 1,
   },
   title: {
-    fontSize: theme.typography.sizes.caption,
-    color: theme.colors.text.secondary,
-    marginBottom: theme.spacing.xs,
+    fontSize: 14,
+    marginBottom: 4,
   },
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
   value: {
-    fontSize: theme.typography.sizes.h2,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.primary,
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   unit: {
-    fontSize: theme.typography.sizes.small,
-    color: theme.colors.text.hint,
-    marginLeft: theme.spacing.xs,
+    fontSize: 12,
+    marginLeft: 4,
   },
 });
 
