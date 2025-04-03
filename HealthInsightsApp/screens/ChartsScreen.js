@@ -1,37 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
   RefreshControl,
   StatusBar,
   Modal,
-  Alert
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import LineChartComponent from '../components/LineChartComponent';
-import { getAllHealthData } from '../utils/storage';
-import { formatDataForLineChart, generateBasicInsights, getHealthRecommendations } from '../utils/dataUtils';
-import theme from '../utils/theme';
-import FeedbackDialog from '../components/FeedbackDialog';
-import InsightSourceBadge from '../components/InsightSourceBadge';
-import ConfidenceIndicator from '../components/ConfidenceIndicator';
-import { saveUserFeedback } from '../utils/storage';
-import { useTheme } from '../utils/ThemeContext';
+  Alert,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import LineChartComponent from "../components/LineChartComponent";
+import { getAllHealthData } from "../utils/storage";
+import {
+  formatDataForLineChart,
+  generateBasicInsights,
+  getHealthRecommendations,
+} from "../utils/dataUtils";
+import theme from "../utils/theme";
+import FeedbackDialog from "../components/FeedbackDialog";
+import InsightSourceBadge from "../components/InsightSourceBadge";
+import ConfidenceIndicator from "../components/ConfidenceIndicator";
+import { saveUserFeedback } from "../utils/storage";
+import { useTheme } from "../utils/ThemeContext";
 
 const ChartsScreen = ({ route, navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const [healthData, setHealthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState(
-    route?.params?.initialMetric || 'steps'
+    route?.params?.initialMetric || "steps"
   );
   const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
-  const [currentInsightType, setCurrentInsightType] = useState('');
+  const [currentInsightType, setCurrentInsightType] = useState("");
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [infoContent, setInfoContent] = useState('');
+  const [infoContent, setInfoContent] = useState("");
 
   // Load data on component mount
   useEffect(() => {
@@ -49,8 +53,11 @@ const ChartsScreen = ({ route, navigation }) => {
   // Get average value for the selected metric
   const getAverageValue = () => {
     if (healthData.length === 0) return 0;
-    
-    const sum = healthData.reduce((acc, item) => acc + (item[selectedMetric] || 0), 0);
+
+    const sum = healthData.reduce(
+      (acc, item) => acc + (item[selectedMetric] || 0),
+      0
+    );
     return (sum / healthData.length).toFixed(1);
   };
 
@@ -60,69 +67,94 @@ const ChartsScreen = ({ route, navigation }) => {
 
   const getYAxisLabel = () => {
     switch (selectedMetric) {
-      case 'steps': return '';
-      case 'sleepHours': return '';
-      case 'waterIntake': return '';
-      case 'mood': return '';
-      default: return '';
+      case "steps":
+        return "";
+      case "sleepHours":
+        return "";
+      case "waterIntake":
+        return "";
+      case "mood":
+        return "";
+      default:
+        return "";
     }
   };
 
   const getYAxisSuffix = () => {
     switch (selectedMetric) {
-      case 'steps': return '';
-      case 'sleepHours': return 'h';
-      case 'waterIntake': return '';
-      case 'mood': return '';
-      default: return '';
+      case "steps":
+        return "";
+      case "sleepHours":
+        return "h";
+      case "waterIntake":
+        return "";
+      case "mood":
+        return "";
+      default:
+        return "";
     }
   };
 
   const getChartColor = () => {
     switch (selectedMetric) {
-      case 'steps': return '#4CAF50';
-      case 'sleepHours': return '#2196F3';
-      case 'waterIntake': return '#00BCD4';
-      case 'mood': return '#FF9800';
-      default: return theme.colors.primary;
+      case "steps":
+        return "#4CAF50";
+      case "sleepHours":
+        return "#2196F3";
+      case "waterIntake":
+        return "#00BCD4";
+      case "mood":
+        return "#FF9800";
+      default:
+        return theme.colors.primary;
     }
   };
 
   const getMetricTitle = () => {
     switch (selectedMetric) {
-      case 'steps': return 'Steps';
-      case 'sleepHours': return 'Sleep Hours';
-      case 'waterIntake': return 'Water Intake (glasses)';
-      case 'mood': return 'Mood (1-5)';
-      default: return selectedMetric;
+      case "steps":
+        return "Steps";
+      case "sleepHours":
+        return "Sleep Hours";
+      case "waterIntake":
+        return "Water Intake (glasses)";
+      case "mood":
+        return "Mood (1-5)";
+      default:
+        return selectedMetric;
     }
   };
 
   const getMetricIcon = () => {
     switch (selectedMetric) {
-      case 'steps': return 'footsteps-outline';
-      case 'sleepHours': return 'moon-outline';
-      case 'waterIntake': return 'water-outline';
-      case 'mood': return 'happy-outline';
-      default: return 'stats-chart-outline';
+      case "steps":
+        return "footsteps-outline";
+      case "sleepHours":
+        return "moon-outline";
+      case "waterIntake":
+        return "water-outline";
+      case "mood":
+        return "happy-outline";
+      default:
+        return "stats-chart-outline";
     }
   };
 
   const getInsightConfidence = () => {
     // Calculate confidence based on data completeness and sample size
     if (healthData.length === 0) return 0;
-    
+
     const confidence = Math.min(0.95, (healthData.length / 30) * 0.8);
     return Math.max(0.1, confidence);
   };
 
   const getInsightSource = () => {
     if (healthData.length >= 14) {
-      return 'user_data';
+      return "user_data";
     } else if (healthData.length >= 7) {
-      return 'general';
+      return "general";
     } else {
-      return 'research';
+      return "research";
     }
   };
 
@@ -146,14 +178,19 @@ const ChartsScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.colors.primary} />
-      
-      <ScrollView 
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.primary}
+      />
+
+      <ScrollView
         style={styles.scrollView}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={loadData}
             colors={[theme.colors.primary]}
             tintColor={theme.colors.primary}
@@ -162,95 +199,138 @@ const ChartsScreen = ({ route, navigation }) => {
       >
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <Text style={[styles.title, { color: theme.colors.text.primary }]}>Health Insights</Text>
-            <TouchableOpacity 
+            <Text style={[styles.title, { color: theme.colors.text.light }]}>
+              Health Insights
+            </Text>
+            <TouchableOpacity
               style={styles.infoButton}
-              onPress={() => navigation.navigate('HowItWorks')}
+              onPress={() => navigation.navigate("HowItWorks")}
             >
-              <Ionicons name="information-circle-outline" size={24} color="rgba(255, 255, 255, 0.8)" />
+              <Ionicons
+                name="information-circle-outline"
+                size={24}
+                color="rgba(255, 255, 255, 0.8)"
+              />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.subtitle, { color: 'white' }]}> View trends and patterns in your data</Text>
+          <Text style={[styles.subtitle, { color: "white" }]}>
+            {" "}
+            View trends and patterns in your data
+          </Text>
         </View>
-        
+
         <View style={styles.metricsButtonContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.metricButton, 
-              selectedMetric === 'steps' && [styles.selectedMetricButton, { backgroundColor: '#4CAF50' }],
+              styles.metricButton,
+              selectedMetric === "steps" && [
+                styles.selectedMetricButton,
+                { backgroundColor: "#4CAF50" },
+              ],
             ]}
-            onPress={() => setSelectedMetric('steps')}
+            onPress={() => setSelectedMetric("steps")}
           >
-            <Ionicons 
+            <Ionicons
               name="footsteps-outline"
               size={22}
-              color={selectedMetric === 'steps' ? 'white' : '#4CAF50'}
+              color={selectedMetric === "steps" ? "white" : "#4CAF50"}
             />
-            <Text style={[
-              styles.metricButtonText,
-              selectedMetric === 'steps' && styles.selectedMetricButtonText
-            ]}>Steps</Text>
+            <Text
+              style={[
+                styles.metricButtonText,
+                selectedMetric === "steps" && styles.selectedMetricButtonText,
+              ]}
+            >
+              Steps
+            </Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[
-              styles.metricButton, 
-              selectedMetric === 'sleepHours' && [styles.selectedMetricButton, { backgroundColor: '#2196F3' }],
+              styles.metricButton,
+              selectedMetric === "sleepHours" && [
+                styles.selectedMetricButton,
+                { backgroundColor: "#2196F3" },
+              ],
             ]}
-            onPress={() => setSelectedMetric('sleepHours')}
+            onPress={() => setSelectedMetric("sleepHours")}
           >
-            <Ionicons 
+            <Ionicons
               name="moon-outline"
               size={22}
-              color={selectedMetric === 'sleepHours' ? 'white' : '#2196F3'}
+              color={selectedMetric === "sleepHours" ? "white" : "#2196F3"}
             />
-            <Text style={[
-              styles.metricButtonText,
-              selectedMetric === 'sleepHours' && styles.selectedMetricButtonText
-            ]}>Sleep</Text>
+            <Text
+              style={[
+                styles.metricButtonText,
+                selectedMetric === "sleepHours" &&
+                  styles.selectedMetricButtonText,
+              ]}
+            >
+              Sleep
+            </Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[
-              styles.metricButton, 
-              selectedMetric === 'waterIntake' && [styles.selectedMetricButton, { backgroundColor: '#00BCD4' }],
+              styles.metricButton,
+              selectedMetric === "waterIntake" && [
+                styles.selectedMetricButton,
+                { backgroundColor: "#00BCD4" },
+              ],
             ]}
-            onPress={() => setSelectedMetric('waterIntake')}
+            onPress={() => setSelectedMetric("waterIntake")}
           >
-            <Ionicons 
+            <Ionicons
               name="water-outline"
               size={22}
-              color={selectedMetric === 'waterIntake' ? 'white' : '#00BCD4'}
+              color={selectedMetric === "waterIntake" ? "white" : "#00BCD4"}
             />
-            <Text style={[
-              styles.metricButtonText,
-              selectedMetric === 'waterIntake' && styles.selectedMetricButtonText
-            ]}>Water</Text>
+            <Text
+              style={[
+                styles.metricButtonText,
+                selectedMetric === "waterIntake" &&
+                  styles.selectedMetricButtonText,
+              ]}
+            >
+              Water
+            </Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[
-              styles.metricButton, 
-              selectedMetric === 'mood' && [styles.selectedMetricButton, { backgroundColor: '#FF9800' }],
+              styles.metricButton,
+              selectedMetric === "mood" && [
+                styles.selectedMetricButton,
+                { backgroundColor: "#FF9800" },
+              ],
             ]}
-            onPress={() => setSelectedMetric('mood')}
+            onPress={() => setSelectedMetric("mood")}
           >
-            <Ionicons 
+            <Ionicons
               name="happy-outline"
               size={22}
-              color={selectedMetric === 'mood' ? 'white' : '#FF9800'}
+              color={selectedMetric === "mood" ? "white" : "#FF9800"}
             />
-            <Text style={[
-              styles.metricButtonText,
-              selectedMetric === 'mood' && styles.selectedMetricButtonText
-            ]}>Mood</Text>
+            <Text
+              style={[
+                styles.metricButtonText,
+                selectedMetric === "mood" && styles.selectedMetricButtonText,
+              ]}
+            >
+              Mood
+            </Text>
           </TouchableOpacity>
         </View>
-        
+
         {healthData.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={styles.emptyStateIcon}>
-              <Ionicons name="analytics-outline" size={60} color={theme.colors.primary} />
+              <Ionicons
+                name="analytics-outline"
+                size={60}
+                color={theme.colors.primary}
+              />
             </View>
             <Text style={styles.emptyStateTitle}>No data to visualize</Text>
             <Text style={styles.emptyStateText}>
@@ -261,63 +341,81 @@ const ChartsScreen = ({ route, navigation }) => {
           <View style={styles.chartsContainer}>
             <View style={styles.chartCard}>
               <View style={styles.chartHeader}>
-                <Ionicons 
+                <Ionicons
                   name={getMetricIcon()}
                   size={24}
                   color={getChartColor()}
                   style={styles.chartIcon}
                 />
-                <Text style={styles.chartTitle}>{getMetricTitle()} Over Time</Text>
+                <Text style={styles.chartTitle}>
+                  {getMetricTitle()} Over Time
+                </Text>
               </View>
-              
+
               <LineChartComponent
                 data={getChartData()}
                 color={getChartColor()}
                 yAxisLabel={getYAxisLabel()}
                 yAxisSuffix={getYAxisSuffix()}
+                metric={selectedMetric} // Add this line
               />
             </View>
-            
+
             <View style={styles.insightCard}>
               <View style={styles.insightHeader}>
-                <Ionicons name="bulb-outline" size={22} color={theme.colors.primary} />
+                <Ionicons
+                  name="bulb-outline"
+                  size={22}
+                  color={theme.colors.primary}
+                />
                 <Text style={styles.insightTitle}>Your Insights</Text>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                   style={styles.feedbackButton}
-                  onPress={() => handleOpenFeedback('general')}
+                  onPress={() => handleOpenFeedback("general")}
                 >
-                  <Ionicons name="chatbox-outline" size={18} color={theme.colors.text.secondary} />
+                  <Ionicons
+                    name="chatbox-outline"
+                    size={18}
+                    color={theme.colors.text.secondary}
+                  />
                   <Text style={styles.feedbackText}>Feedback</Text>
                 </TouchableOpacity>
               </View>
-              
+
               <View style={styles.insightRow}>
-                <Text style={styles.insightLabel}>Average {getMetricTitle()}:</Text>
+                <Text style={styles.insightLabel}>
+                  Average {getMetricTitle()}:
+                </Text>
                 <Text style={styles.insightValue}>
                   {getAverageValue()} {getYAxisSuffix()}
                 </Text>
               </View>
-              
-              <View style={[styles.divider, { backgroundColor: theme.colors.divider }]}/>
-              
+
+              <View
+                style={[
+                  styles.divider,
+                  { backgroundColor: theme.colors.divider },
+                ]}
+              />
+
               <View style={styles.confidenceRow}>
-                <InsightSourceBadge 
-                  source={getInsightSource()} 
+                <InsightSourceBadge
+                  source={getInsightSource()}
                   onInfoPress={handleShowInfo}
                 />
-                
-                <ConfidenceIndicator 
-                  level={getInsightConfidence()} 
+
+                <ConfidenceIndicator
+                  level={getInsightConfidence()}
                   dataPoints={healthData.length}
                   onInfoPress={handleShowInfo}
                 />
               </View>
-              
+
               <View style={styles.insightContent}>
-                <Ionicons 
-                  name="analytics-outline" 
-                  size={20} 
+                <Ionicons
+                  name="analytics-outline"
+                  size={20}
                   color={theme.colors.text.secondary}
                   style={styles.insightIcon}
                 />
@@ -325,40 +423,49 @@ const ChartsScreen = ({ route, navigation }) => {
                   {generateBasicInsights(healthData, selectedMetric)}
                 </Text>
               </View>
-              
+
               <View style={styles.divider} />
-              
+
               <View style={styles.insightContent}>
-                <Ionicons 
-                  name="information-circle-outline" 
-                  size={20} 
+                <Ionicons
+                  name="information-circle-outline"
+                  size={20}
                   color={getChartColor()}
                   style={styles.insightIcon}
                 />
-                <Text style={[styles.recommendationText, { color: getChartColor() }]}>
+                <Text
+                  style={[
+                    styles.recommendationText,
+                    { color: getChartColor() },
+                  ]}
+                >
                   {getHealthRecommendations(selectedMetric, getAverageValue())}
                 </Text>
               </View>
             </View>
           </View>
         )}
-        
+
         <View style={styles.privacyNote}>
-          <Ionicons name="shield-checkmark-outline" size={18} color={theme.colors.text.hint} />
+          <Ionicons
+            name="shield-checkmark-outline"
+            size={18}
+            color={theme.colors.text.hint}
+          />
           <Text style={styles.privacyText}>
             These insights are generated from your local data only.
           </Text>
         </View>
       </ScrollView>
-      
+
       {/* Feedback Dialog */}
-      <FeedbackDialog 
+      <FeedbackDialog
         visible={showFeedbackDialog}
         onClose={() => setShowFeedbackDialog(false)}
         onSubmit={handleSubmitFeedback}
         insightType={currentInsightType}
       />
-      
+
       {/* Info Modal */}
       <Modal
         visible={showInfoModal}
@@ -370,7 +477,7 @@ const ChartsScreen = ({ route, navigation }) => {
           <View style={styles.infoModalContent}>
             <Text style={styles.infoModalTitle}>About This Insight</Text>
             <Text style={styles.infoModalText}>{infoContent}</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.infoModalButton}
               onPress={() => setShowInfoModal(false)}
             >
@@ -400,9 +507,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: theme.borderRadius.l,
   },
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4, // Reduced space between title and subtitle
   },
   title: {
@@ -412,14 +519,14 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: theme.typography.sizes.caption,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: "rgba(255, 255, 255, 0.8)",
   },
   infoButton: {
     padding: 4,
   },
   metricsButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: theme.spacing.m,
     backgroundColor: theme.colors.card,
     borderRadius: theme.borderRadius.m,
@@ -428,7 +535,7 @@ const styles = StyleSheet.create({
     ...theme.shadows.medium,
   },
   metricButton: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: theme.spacing.s,
     paddingHorizontal: theme.spacing.s,
     borderRadius: theme.borderRadius.s,
@@ -448,8 +555,8 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.fontWeights.medium,
   },
   emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: theme.spacing.xl,
     marginTop: theme.spacing.xl,
   },
@@ -458,8 +565,8 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     backgroundColor: theme.colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: theme.spacing.l,
   },
   emptyStateTitle: {
@@ -471,7 +578,7 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: theme.typography.sizes.body,
     color: theme.colors.text.secondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 22,
   },
   chartsContainer: {
@@ -486,8 +593,8 @@ const styles = StyleSheet.create({
     ...theme.shadows.small,
   },
   chartHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: theme.spacing.s,
   },
   chartIcon: {
@@ -505,8 +612,8 @@ const styles = StyleSheet.create({
     ...theme.shadows.small,
   },
   insightHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: theme.spacing.m,
   },
   insightTitle: {
@@ -517,8 +624,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   feedbackButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: theme.colors.background,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -530,8 +637,8 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   insightRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: theme.spacing.s,
   },
   insightLabel: {
@@ -544,8 +651,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text.primary,
   },
   confidenceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: theme.spacing.m,
   },
   divider: {
@@ -554,8 +661,8 @@ const styles = StyleSheet.create({
     marginVertical: theme.spacing.m,
   },
   insightContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
   },
   insightIcon: {
     marginRight: theme.spacing.s,
@@ -574,8 +681,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   privacyNote: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: theme.colors.divider,
     padding: theme.spacing.m,
     marginHorizontal: theme.spacing.m,
@@ -590,22 +697,22 @@ const styles = StyleSheet.create({
   },
   infoModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   infoModalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 12,
     padding: 20,
-    width: '90%',
+    width: "90%",
     maxWidth: 400,
     ...theme.shadows.medium,
   },
   infoModalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.text.primary,
     marginBottom: 12,
   },
@@ -619,11 +726,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     borderRadius: 8,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   infoModalButtonText: {
-    color: 'white',
-    fontWeight: '500',
+    color: "white",
+    fontWeight: "500",
     fontSize: 16,
   },
 });

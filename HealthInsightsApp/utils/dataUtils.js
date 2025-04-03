@@ -71,29 +71,28 @@ export const groupDataByDate = (data) => {
       };
     }
     
-    // Sort data by date
-    const sortedData = [...data].sort((a, b) => 
-      new Date(a.timestamp || a.date) - new Date(b.timestamp || b.date)
-    );
+    // Sort data chronologically
+    const sortedData = [...data].sort((a, b) => {
+      const dateA = a.timestamp ? new Date(a.timestamp) : new Date(a.date);
+      const dateB = b.timestamp ? new Date(b.timestamp) : new Date(b.date);
+      return dateA - dateB;
+    });
     
-    // For simplicity, use the data directly instead of averaging
-    // This ensures we get a point for each data entry
-    
-    // Extract dates for labels - format them as MM/DD for readability
+    // Format dates properly for labels
     const labels = sortedData.map(entry => {
-      const date = new Date(entry.timestamp || entry.date);
-      return `${date.getMonth()+1}/${date.getDate()}`;
+      const date = entry.timestamp ? new Date(entry.timestamp) : new Date(entry.date);
+      return `${date.getMonth()+1}/${date.getDate()}`; // Format as MM/DD
     });
     
     // Extract the metric values
     const values = sortedData.map(entry => entry[metric] || 0);
     
     return {
-      labels,
+      labels: labels,
       datasets: [
         {
           data: values,
-          color: () => '#6200ee', // primary color
+          color: () => '#6200ee',
           strokeWidth: 2
         }
       ],
