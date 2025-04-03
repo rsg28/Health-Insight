@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  ScrollView, 
+  TouchableOpacity, 
+  RefreshControl,
+  StatusBar
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import LineChartComponent from '../components/LineChartComponent';
 import { getAllHealthData } from '../utils/storage';
 import { formatDataForLineChart, generateBasicInsights, getHealthRecommendations } from '../utils/dataUtils';
+import theme from '../utils/theme';
 
-const ChartsScreen = () => {
+const ChartsScreen = ({ route }) => {
   const [healthData, setHealthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState('steps');
+  const [selectedMetric, setSelectedMetric] = useState(
+    route?.params?.initialMetric || 'steps'
+  );
 
   // Load data on component mount
   useEffect(() => {
@@ -60,7 +72,7 @@ const ChartsScreen = () => {
       case 'sleepHours': return '#2196F3';
       case 'waterIntake': return '#00BCD4';
       case 'mood': return '#FF9800';
-      default: return '#6200ee';
+      default: return theme.colors.primary;
     }
   };
 
@@ -74,223 +86,371 @@ const ChartsScreen = () => {
     }
   };
 
+  const getMetricIcon = () => {
+    switch (selectedMetric) {
+      case 'steps': return 'footsteps-outline';
+      case 'sleepHours': return 'moon-outline';
+      case 'waterIntake': return 'water-outline';
+      case 'mood': return 'happy-outline';
+      default: return 'stats-chart-outline';
+    }
+  };
+
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={loadData} />
-      }
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>Health Insights</Text>
-        <Text style={styles.subtitle}>Visualize your health trends</Text>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
       
-      <View style={styles.metricsButtonContainer}>
-        <TouchableOpacity 
-          style={[
-            styles.metricButton, 
-            selectedMetric === 'steps' && styles.selectedMetricButton,
-            { backgroundColor: selectedMetric === 'steps' ? '#4CAF50' : '#f0f0f0' }
-          ]}
-          onPress={() => setSelectedMetric('steps')}
-        >
-          <Text style={[
-            styles.metricButtonText,
-            selectedMetric === 'steps' && styles.selectedMetricButtonText
-          ]}>Steps</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[
-            styles.metricButton, 
-            selectedMetric === 'sleepHours' && styles.selectedMetricButton,
-            { backgroundColor: selectedMetric === 'sleepHours' ? '#2196F3' : '#f0f0f0' }
-          ]}
-          onPress={() => setSelectedMetric('sleepHours')}
-        >
-          <Text style={[
-            styles.metricButtonText,
-            selectedMetric === 'sleepHours' && styles.selectedMetricButtonText
-          ]}>Sleep</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[
-            styles.metricButton, 
-            selectedMetric === 'waterIntake' && styles.selectedMetricButton,
-            { backgroundColor: selectedMetric === 'waterIntake' ? '#00BCD4' : '#f0f0f0' }
-          ]}
-          onPress={() => setSelectedMetric('waterIntake')}
-        >
-          <Text style={[
-            styles.metricButtonText,
-            selectedMetric === 'waterIntake' && styles.selectedMetricButtonText
-          ]}>Water</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[
-            styles.metricButton, 
-            selectedMetric === 'mood' && styles.selectedMetricButton,
-            { backgroundColor: selectedMetric === 'mood' ? '#FF9800' : '#f0f0f0' }
-          ]}
-          onPress={() => setSelectedMetric('mood')}
-        >
-          <Text style={[
-            styles.metricButtonText,
-            selectedMetric === 'mood' && styles.selectedMetricButtonText
-          ]}>Mood</Text>
-        </TouchableOpacity>
-      </View>
-      
-      {healthData.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateText}>
-            No data available. Add some health data to see insights.
-          </Text>
-        </View>
-      ) : (
-        <View>
-          <LineChartComponent
-            data={getChartData()}
-            title={`${getMetricTitle()} Over Time`}
-            yAxisLabel={getYAxisLabel()}
-            yAxisSuffix={getYAxisSuffix()}
-            color={getChartColor()}
+      <ScrollView 
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={loadData}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
           />
+        }
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Health Insights</Text>
+          <Text style={styles.subtitle}>View trends and patterns in your data</Text>
+        </View>
+        
+        <View style={styles.metricsButtonContainer}>
+          <TouchableOpacity 
+            style={[
+              styles.metricButton, 
+              selectedMetric === 'steps' && [styles.selectedMetricButton, { backgroundColor: '#4CAF50' }],
+            ]}
+            onPress={() => setSelectedMetric('steps')}
+          >
+            <Ionicons 
+              name="footsteps-outline"
+              size={22}
+              color={selectedMetric === 'steps' ? 'white' : '#4CAF50'}
+            />
+            <Text style={[
+              styles.metricButtonText,
+              selectedMetric === 'steps' && styles.selectedMetricButtonText
+            ]}>Steps</Text>
+          </TouchableOpacity>
           
-          <View style={styles.insightCard}>
-            <Text style={styles.insightTitle}>Your Insights</Text>
-            <View style={styles.insightRow}>
-              <Text style={styles.insightLabel}>Average:</Text>
-              <Text style={styles.insightValue}>
-                {getAverageValue()} {getYAxisSuffix()}
-              </Text>
+          <TouchableOpacity 
+            style={[
+              styles.metricButton, 
+              selectedMetric === 'sleepHours' && [styles.selectedMetricButton, { backgroundColor: '#2196F3' }],
+            ]}
+            onPress={() => setSelectedMetric('sleepHours')}
+          >
+            <Ionicons 
+              name="moon-outline"
+              size={22}
+              color={selectedMetric === 'sleepHours' ? 'white' : '#2196F3'}
+            />
+            <Text style={[
+              styles.metricButtonText,
+              selectedMetric === 'sleepHours' && styles.selectedMetricButtonText
+            ]}>Sleep</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[
+              styles.metricButton, 
+              selectedMetric === 'waterIntake' && [styles.selectedMetricButton, { backgroundColor: '#00BCD4' }],
+            ]}
+            onPress={() => setSelectedMetric('waterIntake')}
+          >
+            <Ionicons 
+              name="water-outline"
+              size={22}
+              color={selectedMetric === 'waterIntake' ? 'white' : '#00BCD4'}
+            />
+            <Text style={[
+              styles.metricButtonText,
+              selectedMetric === 'waterIntake' && styles.selectedMetricButtonText
+            ]}>Water</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[
+              styles.metricButton, 
+              selectedMetric === 'mood' && [styles.selectedMetricButton, { backgroundColor: '#FF9800' }],
+            ]}
+            onPress={() => setSelectedMetric('mood')}
+          >
+            <Ionicons 
+              name="happy-outline"
+              size={22}
+              color={selectedMetric === 'mood' ? 'white' : '#FF9800'}
+            />
+            <Text style={[
+              styles.metricButtonText,
+              selectedMetric === 'mood' && styles.selectedMetricButtonText
+            ]}>Mood</Text>
+          </TouchableOpacity>
+        </View>
+        
+        {healthData.length === 0 ? (
+          <View style={styles.emptyState}>
+            <View style={styles.emptyStateIcon}>
+              <Ionicons name="analytics-outline" size={60} color={theme.colors.primary} />
             </View>
-            <View style={styles.divider} />
-            <Text style={styles.insightText}>
-              {generateBasicInsights(healthData, selectedMetric)}
-            </Text>
-            <View style={styles.divider} />
-            <Text style={styles.recommendationText}>
-              {getHealthRecommendations(selectedMetric, getAverageValue())}
+            <Text style={styles.emptyStateTitle}>No data to visualize</Text>
+            <Text style={styles.emptyStateText}>
+              Add some health data to see your trends and insights
             </Text>
           </View>
+        ) : (
+          <View style={styles.chartsContainer}>
+            <View style={styles.chartCard}>
+              <View style={styles.chartHeader}>
+                <Ionicons 
+                  name={getMetricIcon()}
+                  size={24}
+                  color={getChartColor()}
+                  style={styles.chartIcon}
+                />
+                <Text style={styles.chartTitle}>{getMetricTitle()} Over Time</Text>
+              </View>
+              
+              <LineChartComponent
+                data={getChartData()}
+                color={getChartColor()}
+                yAxisLabel={getYAxisLabel()}
+                yAxisSuffix={getYAxisSuffix()}
+              />
+            </View>
+            
+            <View style={styles.insightCard}>
+              <View style={styles.insightHeader}>
+                <Ionicons name="bulb-outline" size={22} color={theme.colors.primary} />
+                <Text style={styles.insightTitle}>Your Insights</Text>
+              </View>
+              
+              <View style={styles.insightRow}>
+                <Text style={styles.insightLabel}>Average {getMetricTitle()}:</Text>
+                <Text style={styles.insightValue}>
+                  {getAverageValue()} {getYAxisSuffix()}
+                </Text>
+              </View>
+              
+              <View style={styles.divider} />
+              
+              <View style={styles.insightContent}>
+                <Ionicons 
+                  name="analytics-outline" 
+                  size={20} 
+                  color={theme.colors.text.secondary}
+                  style={styles.insightIcon}
+                />
+                <Text style={styles.insightText}>
+                  {generateBasicInsights(healthData, selectedMetric)}
+                </Text>
+              </View>
+              
+              <View style={styles.divider} />
+              
+              <View style={styles.insightContent}>
+                <Ionicons 
+                  name="information-circle-outline" 
+                  size={20} 
+                  color={getChartColor()}
+                  style={styles.insightIcon}
+                />
+                <Text style={[styles.recommendationText, { color: getChartColor() }]}>
+                  {getHealthRecommendations(selectedMetric, getAverageValue())}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+        
+        <View style={styles.privacyNote}>
+          <Ionicons name="shield-checkmark-outline" size={18} color={theme.colors.text.hint} />
+          <Text style={styles.privacyText}>
+            These insights are generated from your local data only.
+          </Text>
         </View>
-      )}
-      
-      <View style={styles.privacyNote}>
-        <Text style={styles.privacyText}>
-          These basic insights are generated from your local data only and are meant as general information, not medical advice.
-        </Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: theme.colors.background,
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#6200ee',
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.l,
+    paddingTop: theme.spacing.xl,
+    borderBottomLeftRadius: theme.borderRadius.l,
+    borderBottomRightRadius: theme.borderRadius.l,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: theme.typography.sizes.h1,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.light,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: theme.typography.sizes.caption,
     color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 4,
+    marginTop: theme.spacing.xs,
   },
   metricsButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: theme.spacing.m,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.m,
+    marginHorizontal: theme.spacing.m,
+    marginTop: -theme.spacing.l + 40,
+    ...theme.shadows.medium,
   },
   metricButton: {
-    flex: 1,
-    padding: 8,
-    borderRadius: 8,
-    marginHorizontal: 4,
     alignItems: 'center',
+    paddingVertical: theme.spacing.s,
+    paddingHorizontal: theme.spacing.s,
+    borderRadius: theme.borderRadius.s,
+    backgroundColor: theme.colors.background,
+    minWidth: 70,
   },
   selectedMetricButton: {
-    elevation: 3,
+    ...theme.shadows.small,
   },
   metricButtonText: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: theme.typography.sizes.caption,
+    color: theme.colors.text.secondary,
+    marginTop: theme.spacing.xs,
   },
   selectedMetricButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: theme.colors.text.light,
+    fontWeight: theme.typography.fontWeights.medium,
   },
   emptyState: {
-    padding: 32,
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.xl,
+    marginTop: theme.spacing.xl,
+  },
+  emptyStateIcon: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: theme.colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.l,
+  },
+  emptyStateTitle: {
+    fontSize: theme.typography.sizes.h2,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
+    marginBottom: theme.spacing.s,
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: theme.typography.sizes.body,
+    color: theme.colors.text.secondary,
     textAlign: 'center',
+    lineHeight: 22,
+  },
+  chartsContainer: {
+    padding: theme.spacing.m,
+  },
+  chartCard: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.m,
+    padding: theme.spacing.m,
+    marginBottom: theme.spacing.m,
+    ...theme.shadows.small,
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.s,
+  },
+  chartIcon: {
+    marginRight: theme.spacing.s,
+  },
+  chartTitle: {
+    fontSize: theme.typography.sizes.h3,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
   },
   insightCard: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    elevation: 2,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.m,
+    padding: theme.spacing.m,
+    ...theme.shadows.small,
+  },
+  insightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.m,
   },
   insightTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    fontSize: theme.typography.sizes.h3,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
+    marginLeft: theme.spacing.s,
   },
   insightRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: theme.spacing.s,
   },
   insightLabel: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: theme.typography.sizes.body,
+    color: theme.colors.text.secondary,
   },
   insightValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
-    marginVertical: 12,
+    backgroundColor: theme.colors.divider,
+    marginVertical: theme.spacing.m,
+  },
+  insightContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  insightIcon: {
+    marginRight: theme.spacing.s,
+    marginTop: 2,
   },
   insightText: {
-    fontSize: 14,
-    color: '#333',
+    flex: 1,
+    fontSize: theme.typography.sizes.body,
+    color: theme.colors.text.secondary,
     lineHeight: 20,
   },
   recommendationText: {
-    fontSize: 14,
-    color: '#6200ee',
-    fontWeight: '500',
+    flex: 1,
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.fontWeights.medium,
     lineHeight: 20,
   },
   privacyNote: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.divider,
+    padding: theme.spacing.m,
+    marginHorizontal: theme.spacing.m,
+    marginVertical: theme.spacing.m,
+    borderRadius: theme.borderRadius.s,
   },
   privacyText: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
+    marginLeft: theme.spacing.s,
+    fontSize: theme.typography.sizes.caption,
+    color: theme.colors.text.secondary,
+    flex: 1,
   },
 });
 

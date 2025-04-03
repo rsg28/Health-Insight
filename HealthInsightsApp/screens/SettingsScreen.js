@@ -7,16 +7,17 @@ import {
   Switch, 
   Alert,
   ScrollView,
-  Linking
+  StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { clearAllHealthData } from '../utils/storage';
+import theme from '../utils/theme';
 
 const SettingsScreen = () => {
   const [localStorageOnly, setLocalStorageOnly] = useState(true);
-  const [isClearing, setIsClearing] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   // Handle clear data
   const handleClearData = () => {
@@ -47,7 +48,6 @@ const SettingsScreen = () => {
 
   // Handle opening privacy policy
   const handleOpenPrivacyPolicy = () => {
-    // This would normally link to your privacy policy page
     Alert.alert(
       "Privacy Policy",
       "This app respects your privacy. All health data is stored locally on your device and is never shared with third parties without your explicit consent.",
@@ -55,216 +55,238 @@ const SettingsScreen = () => {
     );
   };
 
+  const renderSettingItem = (icon, title, description, value, onValueChange) => {
+    return (
+      <View style={styles.settingItem}>
+        <View style={styles.settingIcon}>
+          <Ionicons name={icon} size={22} color={theme.colors.primary} />
+        </View>
+        <View style={styles.settingContent}>
+          <Text style={styles.settingTitle}>{title}</Text>
+          <Text style={styles.settingDescription}>{description}</Text>
+        </View>
+        <Switch
+          value={value}
+          onValueChange={onValueChange}
+          trackColor={{ false: theme.colors.border, true: theme.colors.primaryLight }}
+          thumbColor={value ? theme.colors.primary : '#f4f3f4'}
+          ios_backgroundColor={theme.colors.border}
+        />
+      </View>
+    );
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+      
       <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Privacy and data controls</Text>
+        <Text style={styles.headerTitle}>Settings</Text>
       </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Privacy Settings</Text>
-        
-        <View style={styles.settingItem}>
-          <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Store Data Locally Only</Text>
-            <Text style={styles.settingDescription}>
-              Keep all your health data on this device only
-            </Text>
-          </View>
-          <Switch
-            value={localStorageOnly}
-            onValueChange={setLocalStorageOnly}
-            trackColor={{ false: '#ccc', true: '#03DAC5' }}
-            thumbColor={localStorageOnly ? '#6200ee' : '#f4f3f4'}
-            ios_backgroundColor="#ccc"
-          />
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>App Settings</Text>
-        
-        <View style={styles.settingItem}>
-          <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Enable Notifications</Text>
-            <Text style={styles.settingDescription}>
-              Receive reminders to log your daily health data
-            </Text>
-          </View>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={setNotificationsEnabled}
-            trackColor={{ false: '#ccc', true: '#03DAC5' }}
-            thumbColor={notificationsEnabled ? '#6200ee' : '#f4f3f4'}
-            ios_backgroundColor="#ccc"
-          />
+      
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Privacy & Data</Text>
+          
+          {renderSettingItem(
+            'lock-closed-outline',
+            'Store Data Locally Only',
+            'Keep all your health data on this device only',
+            localStorageOnly,
+            setLocalStorageOnly
+          )}
+          
+          <View style={styles.divider} />
+          
+          {renderSettingItem(
+            'notifications-outline',
+            'Enable Notifications',
+            'Receive reminders to log your daily health data',
+            notificationsEnabled,
+            setNotificationsEnabled
+          )}
         </View>
         
-        <View style={styles.settingItem}>
-          <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Dark Mode</Text>
-            <Text style={styles.settingDescription}>
-              Switch between light and dark app theme
-            </Text>
-          </View>
-          <Switch
-            value={darkModeEnabled}
-            onValueChange={setDarkModeEnabled}
-            trackColor={{ false: '#ccc', true: '#03DAC5' }}
-            thumbColor={darkModeEnabled ? '#6200ee' : '#f4f3f4'}
-            ios_backgroundColor="#ccc"
-          />
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+          
+          {renderSettingItem(
+            'moon-outline',
+            'Dark Mode',
+            'Switch between light and dark app theme',
+            darkModeEnabled,
+            setDarkModeEnabled
+          )}
         </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Management</Text>
         
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={handleClearData}
-          disabled={isClearing}
-        >
-          <Ionicons name="trash-outline" size={22} color="#FF5252" />
-          <Text style={[styles.buttonText, { color: '#FF5252' }]}>
-            {isClearing ? 'Clearing...' : 'Clear All Health Data'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Data Management</Text>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={handleClearData}
+            disabled={isClearing}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#FFEBEE' }]}>
+              <Ionicons name="trash-outline" size={22} color="#F44336" />
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>Clear All Health Data</Text>
+              <Text style={styles.actionDescription}>
+                Remove all your health data from this device
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={22} color={theme.colors.text.hint} />
+          </TouchableOpacity>
+        </View>
         
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={handleOpenPrivacyPolicy}
-        >
-          <Ionicons name="shield-checkmark-outline" size={22} color="#6200ee" />
-          <Text style={styles.buttonText}>Privacy Policy</Text>
-        </TouchableOpacity>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>About</Text>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={handleOpenPrivacyPolicy}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: theme.colors.primaryLight }]}>
+              <Ionicons name="shield-checkmark-outline" size={22} color={theme.colors.primary} />
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>Privacy Policy</Text>
+              <Text style={styles.actionDescription}>
+                Learn how we protect your data
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={22} color={theme.colors.text.hint} />
+          </TouchableOpacity>
+        </View>
         
         <View style={styles.appInfo}>
-          <Text style={styles.appInfoText}>Health Insights App</Text>
-          <Text style={styles.appInfoVersion}>Version 1.0.0</Text>
-          <Text style={styles.appInfoCopyright}>© 2025 All Rights Reserved</Text>
+          <Text style={styles.appName}>Health Insights App</Text>
+          <Text style={styles.appVersion}>Version 1.0.0</Text>
+          <Text style={styles.appCopyright}>© 2025 All Rights Reserved</Text>
         </View>
-      </View>
-
-      <View style={styles.privacyNote}>
-        <Ionicons name="information-circle-outline" size={22} color="#888" />
-        <Text style={styles.privacyText}>
-          This app is designed with privacy in mind. Your health data never leaves your device unless you explicitly export it.
-        </Text>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: theme.colors.background,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#6200ee',
+    backgroundColor: theme.colors.primary,
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
-  title: {
-    fontSize: 20,
+  headerTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
   },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 4,
+  scrollView: {
+    flex: 1,
+    padding: 16,
   },
   section: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    marginHorizontal: 16,
-    marginTop: 16,
-    padding: 16,
-    elevation: 2,
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+    ...theme.shadows.small,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
+    color: theme.colors.text.primary,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    padding: 16,
   },
-  settingTextContainer: {
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  settingContent: {
     flex: 1,
-    marginRight: 8,
+    marginRight: 12,
   },
   settingTitle: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: '500',
+    color: theme.colors.text.primary,
+    marginBottom: 2,
   },
   settingDescription: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 2,
+    fontSize: 13,
+    color: theme.colors.text.secondary,
   },
-  button: {
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginLeft: 68,
+  },
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    padding: 16,
   },
-  buttonText: {
+  actionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  actionContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  actionTitle: {
     fontSize: 16,
-    color: '#6200ee',
-    marginLeft: 12,
+    fontWeight: '500',
+    color: theme.colors.text.primary,
+    marginBottom: 2,
+  },
+  actionDescription: {
+    fontSize: 13,
+    color: theme.colors.text.secondary,
   },
   appInfo: {
     alignItems: 'center',
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    paddingVertical: 24,
+    paddingHorizontal: 16,
   },
-  appInfoText: {
-    fontSize: 16,
+  appName: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text.primary,
   },
-  appInfoVersion: {
+  appVersion: {
     fontSize: 14,
-    color: '#888',
+    color: theme.colors.text.secondary,
     marginTop: 4,
   },
-  appInfoCopyright: {
+  appCopyright: {
     fontSize: 12,
-    color: '#999',
-    marginTop: 2,
-  },
-  privacyNote: {
-    flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
-    margin: 16,
+    color: theme.colors.text.hint,
     marginTop: 8,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  privacyText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 12,
-    lineHeight: 20,
-  },
+  }
 });
 
 export default SettingsScreen;

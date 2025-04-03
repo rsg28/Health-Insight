@@ -1,12 +1,17 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import theme from '../utils/theme';
 
 const HealthMetricCard = ({ title, value, unit, icon, color, onPress }) => {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        <Ionicons name={icon} size={24} color="white" />
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
+        <Ionicons name={icon} size={24} color={color} />
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{title}</Text>
@@ -21,51 +26,42 @@ const HealthMetricCard = ({ title, value, unit, icon, color, onPress }) => {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    flex: 1,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.borderRadius.m,
+    padding: theme.spacing.m,
+    marginHorizontal: theme.spacing.xs,
+    ...theme.shadows.small,
   },
   iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: theme.borderRadius.circle,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 16,
+    marginBottom: theme.spacing.s,
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 4,
+    fontSize: theme.typography.sizes.caption,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.xs,
   },
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
   },
   value: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: theme.typography.sizes.h2,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
   },
   unit: {
-    fontSize: 14,
-    color: '#777',
-    marginLeft: 4,
+    fontSize: theme.typography.sizes.small,
+    color: theme.colors.text.hint,
+    marginLeft: theme.spacing.xs,
   },
 });
 

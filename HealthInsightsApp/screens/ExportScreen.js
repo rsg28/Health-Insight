@@ -7,10 +7,12 @@ import {
   Share, 
   Alert,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllHealthData, exportHealthDataAsJSON, exportHealthDataAsCSV } from '../utils/storage';
+import theme from '../utils/theme';
 
 const ExportScreen = () => {
   const [healthData, setHealthData] = useState([]);
@@ -80,135 +82,157 @@ const ExportScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
+      
       <View style={styles.header}>
-        <Text style={styles.title}>Export Your Data</Text>
-        <Text style={styles.subtitle}>Download your health data in various formats</Text>
+        <Text style={styles.headerTitle}>Export Your Data</Text>
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#6200ee" />
-          <Text style={styles.loadingText}>Preparing your data...</Text>
+      <ScrollView style={styles.scrollView}>
+        {loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.loadingText}>Preparing your data...</Text>
+          </View>
+        )}
+
+        <View style={styles.infoCard}>
+          <Ionicons 
+            name="information-circle-outline" 
+            size={24} 
+            color={theme.colors.primary} 
+            style={styles.infoIcon} 
+          />
+          <Text style={styles.infoText}>
+            Your health data belongs to you. Export it anytime to keep a backup 
+            or use it in other applications.
+          </Text>
         </View>
-      ) : (
-        <View style={styles.contentContainer}>
-          <View style={styles.infoCard}>
-            <Ionicons name="information-circle-outline" size={24} color="#6200ee" style={styles.infoIcon} />
-            <Text style={styles.infoText}>
-              Your health data belongs to you. Export it anytime to keep a backup or use it in other applications.
+
+        <View style={styles.dataCard}>
+          <Text style={styles.cardTitle}>Data Summary</Text>
+          
+          <View style={styles.dataRow}>
+            <View style={styles.dataLabelContainer}>
+              <Ionicons name="document-text-outline" size={18} color={theme.colors.text.secondary} />
+              <Text style={styles.dataLabel}>Total Entries</Text>
+            </View>
+            <Text style={styles.dataValue}>{healthData.length}</Text>
+          </View>
+          
+          <View style={styles.divider} />
+          
+          <View style={styles.dataRow}>
+            <View style={styles.dataLabelContainer}>
+              <Ionicons name="calendar-outline" size={18} color={theme.colors.text.secondary} />
+              <Text style={styles.dataLabel}>Date Range</Text>
+            </View>
+            <Text style={styles.dataValue}>
+              {healthData.length > 0 
+                ? `${new Date(healthData[0].timestamp).toLocaleDateString()} - ${new Date(healthData[healthData.length - 1].timestamp).toLocaleDateString()}`
+                : 'No data'}
             </Text>
           </View>
+        </View>
 
-          <View style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>Data Summary</Text>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Total Entries:</Text>
-              <Text style={styles.statValue}>{healthData.length}</Text>
+        <Text style={styles.sectionTitle}>Export Options</Text>
+        
+        <TouchableOpacity 
+          style={[styles.exportButton, { backgroundColor: theme.colors.primary }]}
+          onPress={handleJSONExport}
+          disabled={loading || healthData.length === 0}
+        >
+          <View style={styles.exportButtonContent}>
+            <View style={styles.exportIconContainer}>
+              <Ionicons name="code-outline" size={24} color="white" />
             </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>First Entry:</Text>
-              <Text style={styles.statValue}>
-                {healthData.length > 0 
-                  ? new Date(healthData[0].timestamp).toLocaleDateString() 
-                  : 'N/A'}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Latest Entry:</Text>
-              <Text style={styles.statValue}>
-                {healthData.length > 0 
-                  ? new Date(healthData[healthData.length - 1].timestamp).toLocaleDateString() 
-                  : 'N/A'}
-              </Text>
+            <View style={styles.exportTextContainer}>
+              <Text style={styles.exportButtonTitle}>Export as JSON</Text>
+              <Text style={styles.exportButtonSubtitle}>For developers or data analysis</Text>
             </View>
           </View>
-
-          <View style={styles.exportOptions}>
-            <Text style={styles.optionsTitle}>Export Options</Text>
-            
-            <TouchableOpacity 
-              style={styles.exportButton}
-              onPress={handleJSONExport}
-              disabled={loading || healthData.length === 0}
-            >
-              <View style={styles.buttonContent}>
-                <Ionicons name="code-outline" size={24} color="white" />
-                <View style={styles.buttonTextContainer}>
-                  <Text style={styles.buttonTitle}>Export as JSON</Text>
-                  <Text style={styles.buttonSubtitle}>Technical format for developers</Text>
-                </View>
-              </View>
-              <Ionicons name="chevron-forward" size={24} color="white" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.exportButton, styles.csvButton]}
-              onPress={handleCSVExport}
-              disabled={loading || healthData.length === 0}
-            >
-              <View style={styles.buttonContent}>
-                <Ionicons name="document-text-outline" size={24} color="white" />
-                <View style={styles.buttonTextContainer}>
-                  <Text style={styles.buttonTitle}>Export as CSV</Text>
-                  <Text style={styles.buttonSubtitle}>Compatible with spreadsheet apps</Text>
-                </View>
-              </View>
-              <Ionicons name="chevron-forward" size={24} color="white" />
-            </TouchableOpacity>
+          <Ionicons name="chevron-forward" size={24} color="white" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.exportButton, { backgroundColor: theme.colors.secondary }]}
+          onPress={handleCSVExport}
+          disabled={loading || healthData.length === 0}
+        >
+          <View style={styles.exportButtonContent}>
+            <View style={styles.exportIconContainer}>
+              <Ionicons name="grid-outline" size={24} color="white" />
+            </View>
+            <View style={styles.exportTextContainer}>
+              <Text style={styles.exportButtonTitle}>Export as CSV</Text>
+              <Text style={styles.exportButtonSubtitle}>For spreadsheets and Excel</Text>
+            </View>
           </View>
-
-          <View style={styles.privacyNote}>
-            <Ionicons name="shield-checkmark-outline" size={24} color="#888" />
+          <Ionicons name="chevron-forward" size={24} color="white" />
+        </TouchableOpacity>
+        
+        <View style={styles.privacyBox}>
+          <View style={styles.privacyIconContainer}>
+            <Ionicons name="shield-checkmark-outline" size={28} color={theme.colors.primary} />
+          </View>
+          <View>
+            <Text style={styles.privacyTitle}>Privacy First</Text>
             <Text style={styles.privacyText}>
-              Your data is exported directly from your device. No data is sent to any servers during this process.
+              Your data stays on your device until you choose to export it.
+              No information is sent to external servers.
             </Text>
           </View>
         </View>
-      )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: theme.colors.background,
   },
   header: {
-    padding: 16,
-    backgroundColor: '#6200ee',
+    backgroundColor: theme.colors.primary,
+    paddingTop: 60,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
-  title: {
-    fontSize: 20,
+  headerTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
   },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 4,
-  },
-  loadingContainer: {
+  scrollView: {
     flex: 1,
+    padding: 16,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255,255,255,0.9)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    zIndex: 1000,
   },
   loadingText: {
-    marginTop: 16,
+    marginTop: 12,
     fontSize: 16,
-    color: '#666',
-  },
-  contentContainer: {
-    padding: 16,
+    color: theme.colors.text.secondary,
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: '#EDE7F6',
-    borderRadius: 8,
+    backgroundColor: theme.colors.primaryLight,
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
+    marginTop: 16,
     alignItems: 'center',
   },
   infoIcon: {
@@ -217,89 +241,111 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 14,
-    color: '#555',
+    color: theme.colors.text.primary,
     lineHeight: 20,
   },
-  statsContainer: {
+  dataCard: {
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
-    elevation: 2,
+    marginTop: 16,
+    ...theme.shadows.small,
   },
-  statsTitle: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333',
+    color: theme.colors.text.primary,
+    marginBottom: 16,
   },
-  statRow: {
+  dataRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    alignItems: 'center',
+    paddingVertical: 8,
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
+  dataLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  statValue: {
+  dataLabel: {
     fontSize: 14,
+    color: theme.colors.text.secondary,
+    marginLeft: 8,
+  },
+  dataValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: theme.colors.text.primary,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginVertical: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-  },
-  exportOptions: {
+    color: theme.colors.text.primary,
+    marginTop: 24,
     marginBottom: 16,
-  },
-  optionsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333',
   },
   exportButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#6200ee',
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  csvButton: {
-    backgroundColor: '#03DAC5',
-  },
-  buttonContent: {
+  exportButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  buttonTextContainer: {
-    marginLeft: 12,
+  exportIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
-  buttonTitle: {
+  exportTextContainer: {
+    flex: 1,
+  },
+  exportButtonTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },
-  buttonSubtitle: {
+  exportButtonSubtitle: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 2,
   },
-  privacyNote: {
+  privacyBox: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
     padding: 16,
-    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  privacyIconContainer: {
+    marginRight: 12,
+  },
+  privacyTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.colors.text.primary,
+    marginBottom: 4,
   },
   privacyText: {
-    flex: 1,
-    marginLeft: 12,
     fontSize: 14,
-    color: '#666',
+    color: theme.colors.text.secondary,
     lineHeight: 20,
-  },
+    maxWidth: '90%',
+  }
 });
 
 export default ExportScreen;

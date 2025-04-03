@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import Slider from '@react-native-community/slider';
 import { saveHealthData } from '../utils/storage';
+import { Ionicons } from '@expo/vector-icons';
 
 const DataEntryForm = ({ onSaveComplete }) => {
   const [steps, setSteps] = useState('');
@@ -36,6 +36,25 @@ const DataEntryForm = ({ onSaveComplete }) => {
         onSaveComplete(healthData);
       }
     }
+  };
+
+  const renderMoodButton = (value, icon, label) => {
+    const isSelected = mood === value;
+    return (
+      <TouchableOpacity
+        style={[
+          styles.moodButton,
+          isSelected && styles.selectedMoodButton
+        ]}
+        onPress={() => setMood(value)}
+      >
+        <Text style={styles.moodEmoji}>{icon}</Text>
+        <Text style={[
+          styles.moodLabel,
+          isSelected && styles.selectedMoodLabel
+        ]}>{label}</Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -76,23 +95,14 @@ const DataEntryForm = ({ onSaveComplete }) => {
       </View>
       
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Mood (1-5)</Text>
+        <Text style={styles.label}>Mood</Text>
         <View style={styles.moodContainer}>
-          <Text>😔</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={1}
-            maximumValue={5}
-            step={1}
-            value={mood}
-            onValueChange={setMood}
-            minimumTrackTintColor="#6200ee"
-            maximumTrackTintColor="#d3d3d3"
-            thumbTintColor="#6200ee"
-          />
-          <Text>😃</Text>
+          {renderMoodButton(1, '😔', 'Poor')}
+          {renderMoodButton(2, '😕', 'Fair')}
+          {renderMoodButton(3, '😐', 'Okay')}
+          {renderMoodButton(4, '🙂', 'Good')}
+          {renderMoodButton(5, '😃', 'Great')}
         </View>
-        <Text style={styles.moodValue}>{mood}</Text>
       </View>
       
       <TouchableOpacity 
@@ -137,17 +147,30 @@ const styles = StyleSheet.create({
   },
   moodContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  slider: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  moodValue: {
-    textAlign: 'center',
-    fontSize: 20,
     marginTop: 8,
+  },
+  moodButton: {
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+    width: '18%',
+  },
+  selectedMoodButton: {
+    backgroundColor: '#6200ee',
+  },
+  moodEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  moodLabel: {
+    fontSize: 12,
+    color: '#555',
+  },
+  selectedMoodLabel: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   saveButton: {
     backgroundColor: '#6200ee',
