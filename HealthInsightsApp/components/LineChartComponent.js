@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   yAxisLabelContainer: {
     alignItems: 'flex-end',
-    height: 220 / 6, // Height divided by number of labels (segments + 1)
+    height: 220 / 6,
     justifyContent: 'center',
   },
   yAxisLabel: {

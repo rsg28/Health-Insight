@@ -96,3 +96,30 @@ Through transparent data practices and clear documentation, we encourage users t
 
 ## Privacy Commitment
 The Health Insights App is built with privacy as a foundational principle. No data is transmitted to external servers without explicit user consent, and all processing occurs locally on the device.
+
+## Architecture
+
+App Structure:
+- App.js 
+  └─ AppNavigator.js (Tab Navigation)
+     ├─ HomeScreen
+     │  └─ HealthMetricCard components
+     ├─ ChartsScreen
+     │  ├─ LineChartComponent 
+     │  ├─ ConfidenceIndicator
+     │  └─ InsightSourceBadge
+     ├─ ExportScreen
+     └─ SettingsScreen
+        ├─ DataManagementScreen
+        └─ HowItWorksScreen
+
+Utilities:
+- storage.js: Handles saving/loading data
+- dataUtils.js: Processes data for charts and insights
+- ThemeContext.js: Manages app theme (light/dark)
+- theme.js/darkTheme.js: Theme styles
+
+Data Flow:
+1. User enters data → saved to device
+2. Data loaded → processed → displayed in charts
+3. Insights generated from processed data
