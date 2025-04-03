@@ -194,8 +194,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: theme.colors.primary,
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.xl,
+    paddingTop: theme.spacing.xl ,
+    paddingBottom: theme.spacing.xl - 30,
     borderBottomLeftRadius: theme.borderRadius.l,
     borderBottomRightRadius: theme.borderRadius.l,
   },
