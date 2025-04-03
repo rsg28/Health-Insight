@@ -62,13 +62,37 @@ export const groupDataByDate = (data) => {
   
   // Format data for the line chart component
   export const formatDataForLineChart = (data, metric) => {
-    const averages = calculateDailyAverages(data);
+    // Early return if no data
+    if (!data || data.length === 0) {
+      return {
+        labels: [],
+        datasets: [{ data: [] }],
+        legend: [metric]
+      };
+    }
+    
+    // Sort data by date
+    const sortedData = [...data].sort((a, b) => 
+      new Date(a.timestamp || a.date) - new Date(b.timestamp || b.date)
+    );
+    
+    // For simplicity, use the data directly instead of averaging
+    // This ensures we get a point for each data entry
+    
+    // Extract dates for labels - format them as MM/DD for readability
+    const labels = sortedData.map(entry => {
+      const date = new Date(entry.timestamp || entry.date);
+      return `${date.getMonth()+1}/${date.getDate()}`;
+    });
+    
+    // Extract the metric values
+    const values = sortedData.map(entry => entry[metric] || 0);
     
     return {
-      labels: averages.map(entry => entry.date.substring(5)), // shortened date format
+      labels,
       datasets: [
         {
-          data: averages.map(entry => entry[metric] || 0),
+          data: values,
           color: () => '#6200ee', // primary color
           strokeWidth: 2
         }
