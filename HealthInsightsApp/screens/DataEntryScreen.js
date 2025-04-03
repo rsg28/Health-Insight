@@ -128,7 +128,7 @@ const DataEntryForm = ({ onSaveComplete }) => {
               style={styles.input}
               value={waterIntake}
               onChangeText={setWaterIntake}
-              placeholder="How many glasses of water did you drink?"
+              placeholder="How many glasses of water?"
               keyboardType="number-pad"
               placeholderTextColor={theme.colors.text.hint}
             />
@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   formContainer: {
+    marginTop:30,
     padding: theme.spacing.m,
   },
   title: {

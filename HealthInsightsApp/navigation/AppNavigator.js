@@ -10,6 +10,8 @@ import DataEntryScreen from '../screens/DataEntryScreen';
 import ChartsScreen from '../screens/ChartsScreen';
 import ExportScreen from '../screens/ExportScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import HowItWorksScreen from '../screens/HowItWorksScreen';
+import DataManagementScreen from '../screens/DataManagementScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,6 +34,11 @@ const HomeStack = () => {
         name="DataEntry" 
         component={DataEntryScreen} 
         options={{ title: 'Add Health Data' }} 
+      />
+      <Stack.Screen 
+        name="HowItWorks" 
+        component={HowItWorksScreen} 
+        options={{ title: 'How It Works' }} 
       />
     </Stack.Navigator>
   );
@@ -83,6 +90,16 @@ const SettingsStack = () => {
         name="Settings" 
         component={SettingsScreen} 
         options={{ title: 'App Settings' }} 
+      />
+      <Stack.Screen 
+        name="DataManagement" 
+        component={DataManagementScreen} 
+        options={{ title: 'Data Management' }} 
+      />
+      <Stack.Screen 
+        name="HowItWorks" 
+        component={HowItWorksScreen} 
+        options={{ title: 'How It Works' }} 
       />
     </Stack.Navigator>
   );

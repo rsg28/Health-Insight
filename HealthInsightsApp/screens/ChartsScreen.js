@@ -6,20 +6,30 @@ import {
   ScrollView, 
   TouchableOpacity, 
   RefreshControl,
-  StatusBar
+  StatusBar,
+  Modal,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import LineChartComponent from '../components/LineChartComponent';
 import { getAllHealthData } from '../utils/storage';
 import { formatDataForLineChart, generateBasicInsights, getHealthRecommendations } from '../utils/dataUtils';
 import theme from '../utils/theme';
+import FeedbackDialog from '../components/FeedbackDialog';
+import InsightSourceBadge from '../components/InsightSourceBadge';
+import ConfidenceIndicator from '../components/ConfidenceIndicator';
+import { saveUserFeedback } from '../utils/storage';
 
-const ChartsScreen = ({ route }) => {
+const ChartsScreen = ({ route, navigation }) => {
   const [healthData, setHealthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState(
     route?.params?.initialMetric || 'steps'
   );
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [currentInsightType, setCurrentInsightType] = useState('');
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [infoContent, setInfoContent] = useState('');
 
   // Load data on component mount
   useEffect(() => {
@@ -96,6 +106,43 @@ const ChartsScreen = ({ route }) => {
     }
   };
 
+  const getInsightConfidence = () => {
+    // Calculate confidence based on data completeness and sample size
+    if (healthData.length === 0) return 0;
+    
+    const confidence = Math.min(0.95, (healthData.length / 30) * 0.8);
+    return Math.max(0.1, confidence);
+  };
+
+  const getInsightSource = () => {
+    if (healthData.length >= 14) {
+      return 'user_data';
+    } else if (healthData.length >= 7) {
+      return 'general';
+    } else {
+      return 'research';
+    }
+  };
+
+  const handleOpenFeedback = (insightType) => {
+    setCurrentInsightType(insightType);
+    setShowFeedbackDialog(true);
+  };
+
+  const handleSubmitFeedback = async (feedback) => {
+    await saveUserFeedback(feedback);
+    Alert.alert(
+      "Thank You",
+      "Your feedback helps us improve the quality of insights.",
+      [{ text: "OK" }]
+    );
+  };
+
+  const handleShowInfo = (content) => {
+    setInfoContent(content);
+    setShowInfoModal(true);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
@@ -112,7 +159,15 @@ const ChartsScreen = ({ route }) => {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Health Insights</Text>
+          <View style={styles.headerContent}>
+            <Text style={styles.title}>Health Insights</Text>
+            <TouchableOpacity 
+              style={styles.infoButton}
+              onPress={() => navigation.navigate('HowItWorks')}
+            >
+              <Ionicons name="information-circle-outline" size={24} color="rgba(255, 255, 255, 0.8)" />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.subtitle}>View trends and patterns in your data</Text>
         </View>
         
@@ -225,6 +280,14 @@ const ChartsScreen = ({ route }) => {
               <View style={styles.insightHeader}>
                 <Ionicons name="bulb-outline" size={22} color={theme.colors.primary} />
                 <Text style={styles.insightTitle}>Your Insights</Text>
+                
+                <TouchableOpacity 
+                  style={styles.feedbackButton}
+                  onPress={() => handleOpenFeedback('general')}
+                >
+                  <Ionicons name="chatbox-outline" size={18} color={theme.colors.text.secondary} />
+                  <Text style={styles.feedbackText}>Feedback</Text>
+                </TouchableOpacity>
               </View>
               
               <View style={styles.insightRow}>
@@ -235,6 +298,19 @@ const ChartsScreen = ({ route }) => {
               </View>
               
               <View style={styles.divider} />
+              
+              <View style={styles.confidenceRow}>
+                <InsightSourceBadge 
+                  source={getInsightSource()} 
+                  onInfoPress={handleShowInfo}
+                />
+                
+                <ConfidenceIndicator 
+                  level={getInsightConfidence()} 
+                  dataPoints={healthData.length}
+                  onInfoPress={handleShowInfo}
+                />
+              </View>
               
               <View style={styles.insightContent}>
                 <Ionicons 
@@ -272,6 +348,35 @@ const ChartsScreen = ({ route }) => {
           </Text>
         </View>
       </ScrollView>
+      
+      {/* Feedback Dialog */}
+      <FeedbackDialog 
+        visible={showFeedbackDialog}
+        onClose={() => setShowFeedbackDialog(false)}
+        onSubmit={handleSubmitFeedback}
+        insightType={currentInsightType}
+      />
+      
+      {/* Info Modal */}
+      <Modal
+        visible={showInfoModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowInfoModal(false)}
+      >
+        <View style={styles.infoModalOverlay}>
+          <View style={styles.infoModalContent}>
+            <Text style={styles.infoModalTitle}>About This Insight</Text>
+            <Text style={styles.infoModalText}>{infoContent}</Text>
+            <TouchableOpacity 
+              style={styles.infoModalButton}
+              onPress={() => setShowInfoModal(false)}
+            >
+              <Text style={styles.infoModalButtonText}>Got it</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -286,10 +391,17 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: theme.colors.primary,
-    padding: theme.spacing.l,
-    paddingTop: theme.spacing.xl,
+    padding: theme.spacing.m,
+    paddingTop: 60, // Added more space at the top
+    paddingBottom: theme.spacing.l,
     borderBottomLeftRadius: theme.borderRadius.l,
     borderBottomRightRadius: theme.borderRadius.l,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4, // Reduced space between title and subtitle
   },
   title: {
     fontSize: theme.typography.sizes.h1,
@@ -299,7 +411,9 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: theme.typography.sizes.caption,
     color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: theme.spacing.xs,
+  },
+  infoButton: {
+    padding: 4,
   },
   metricsButtonContainer: {
     flexDirection: 'row',
@@ -308,7 +422,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.card,
     borderRadius: theme.borderRadius.m,
     marginHorizontal: theme.spacing.m,
-    marginTop: -theme.spacing.l + 40,
+    marginTop: 20, // Moved down to not overlap with header
     ...theme.shadows.medium,
   },
   metricButton: {
@@ -360,6 +474,7 @@ const styles = StyleSheet.create({
   },
   chartsContainer: {
     padding: theme.spacing.m,
+    paddingTop: 10, // Reduced top padding
   },
   chartCard: {
     backgroundColor: theme.colors.card,
@@ -397,6 +512,20 @@ const styles = StyleSheet.create({
     fontWeight: theme.typography.fontWeights.bold,
     color: theme.colors.text.primary,
     marginLeft: theme.spacing.s,
+    flex: 1,
+  },
+  feedbackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  feedbackText: {
+    fontSize: 12,
+    color: theme.colors.text.secondary,
+    marginLeft: 4,
   },
   insightRow: {
     flexDirection: 'row',
@@ -411,6 +540,11 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.body,
     fontWeight: theme.typography.fontWeights.bold,
     color: theme.colors.text.primary,
+  },
+  confidenceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.m,
   },
   divider: {
     height: 1,
@@ -451,6 +585,44 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.sizes.caption,
     color: theme.colors.text.secondary,
     flex: 1,
+  },
+  infoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  infoModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    width: '90%',
+    maxWidth: 400,
+    ...theme.shadows.medium,
+  },
+  infoModalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.text.primary,
+    marginBottom: 12,
+  },
+  infoModalText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: theme.colors.text.secondary,
+    marginBottom: 16,
+  },
+  infoModalButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  infoModalButtonText: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 16,
   },
 });
 

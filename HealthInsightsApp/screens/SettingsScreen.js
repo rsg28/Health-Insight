@@ -10,41 +10,12 @@ import {
   StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { clearAllHealthData } from '../utils/storage';
 import theme from '../utils/theme';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
   const [localStorageOnly, setLocalStorageOnly] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const [isClearing, setIsClearing] = useState(false);
-
-  // Handle clear data
-  const handleClearData = () => {
-    Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to clear all your health data? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Clear All Data",
-          style: "destructive",
-          onPress: async () => {
-            setIsClearing(true);
-            await clearAllHealthData();
-            setIsClearing(false);
-            Alert.alert(
-              "Data Cleared",
-              "All your health data has been cleared from this device."
-            );
-          }
-        }
-      ]
-    );
-  };
 
   // Handle opening privacy policy
   const handleOpenPrivacyPolicy = () => {
@@ -124,16 +95,31 @@ const SettingsScreen = () => {
           
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={handleClearData}
-            disabled={isClearing}
+            onPress={() => navigation.navigate('DataManagement')}
           >
-            <View style={[styles.actionIcon, { backgroundColor: '#FFEBEE' }]}>
-              <Ionicons name="trash-outline" size={22} color="#F44336" />
+            <View style={[styles.actionIcon, { backgroundColor: theme.colors.primaryLight }]}>
+              <Ionicons name="shield-outline" size={22} color={theme.colors.primary} />
             </View>
             <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Clear All Health Data</Text>
+              <Text style={styles.actionTitle}>Data Privacy Controls</Text>
               <Text style={styles.actionDescription}>
-                Remove all your health data from this device
+                Manage your data with granular privacy settings
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={22} color={theme.colors.text.hint} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('HowItWorks')}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: '#E8F4FD' }]}>
+              <Ionicons name="information-circle-outline" size={22} color="#2980b9" />
+            </View>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>How This App Works</Text>
+              <Text style={styles.actionDescription}>
+                Learn how your data is used to generate insights
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={22} color={theme.colors.text.hint} />
