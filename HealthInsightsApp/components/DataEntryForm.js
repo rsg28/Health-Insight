@@ -150,7 +150,7 @@ const DataEntryForm = ({ onSaveComplete }) => {
               style={styles.input}
               value={waterIntake}
               onChangeText={setWaterIntake}
-              placeholder="How many glasses of water did you drink?"
+              placeholder="How many glasses of water?"
               keyboardType="number-pad"
               placeholderTextColor={theme.colors.text.hint}
             />
@@ -169,7 +169,6 @@ const DataEntryForm = ({ onSaveComplete }) => {
           </View>
         </View>
         
-        {/* Context Annotations - NEW SECTION */}
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Context Flags (Optional)</Text>
           <Text style={styles.sectionSubtitle}>
