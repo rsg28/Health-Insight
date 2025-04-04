@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import HealthMetricCard from '../components/HealthMetricCard';
+import ContextFlagsDisplay from '../components/ContextFlagsDisplay';
 import { getAllHealthData } from '../utils/storage';
 import { calculateDailyAverages } from '../utils/dataUtils';
 import { useTheme } from '../utils/ThemeContext';
-
 const HomeScreen = ({ navigation }) => {
   const { theme, isDarkMode } = useTheme();
   const [healthData, setHealthData] = useState([]);
@@ -97,6 +97,11 @@ const HomeScreen = ({ navigation }) => {
               <Text style={[styles.summaryText, { color: theme.colors.text.secondary }]}>Start tracking your health today!</Text>
             )}
           </View>
+          
+          {/* Add ContextFlagsDisplay component here if todayData has context flags */}
+          {todayData && todayData.contextFlags && todayData.contextFlags.length > 0 && (
+            <ContextFlagsDisplay contextFlags={todayData.contextFlags} />
+          )}
           
           <TouchableOpacity 
             style={[styles.addButton, { backgroundColor: theme.colors.secondary }]}
