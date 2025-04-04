@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lightTheme from './theme';
-import darkTheme from './darkTheme';
+import darkTheme from './DarkTheme';
 
 const THEME_STORAGE_KEY = '@health_insights_app_theme';
 
