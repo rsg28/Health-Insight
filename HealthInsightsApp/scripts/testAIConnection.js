@@ -1,3 +1,4 @@
+import OLLAMA_API_HOST from '../config/apiConfig';
 const axios = require('axios');
 
 /**
@@ -6,7 +7,7 @@ const axios = require('axios');
  * @param {string} baseUrl - The base URL of the AI service
  * @returns {Promise<boolean>} - True if the service is available, false otherwise
  */
-const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl = 'http://localhost:11434') => {
+const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl = OLLAMA_API_HOST) => {
   try {
     console.log(`Attempting to connect to Ollama at ${baseUrl}...`);
     
@@ -58,7 +59,7 @@ const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl = 'http:
  * @param {string} baseUrl - The base URL of the AI service
  * @returns {Promise<Object>} - Result object with success and response props
  */
-const testAIService = async (modelName = 'llama3', baseUrl = 'http://localhost:11434') => {
+const testAIService = async (modelName = 'llama3', baseUrl = OLLAMA_API_HOST) => {
   try {
     console.log(`Sending test prompt to ${baseUrl}/api/generate...`);
     const response = await axios.post(`${baseUrl}/api/generate`, {
@@ -111,7 +112,7 @@ const testConnection = async () => {
     console.log('You can now use the AI Advisor component in the app.');
   } else {
     console.log('❌ AI service is not available or not responding correctly.');
-    console.log('Please make sure Llama3 is running on http://localhost:11434/');
+    console.log(`Please make sure Llama3 is running on ${OLLAMA_API_HOST}/`);
     console.log('You can start it with: ollama run llama3');
   }
 };

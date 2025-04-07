@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useTheme } from '../utils/ThemeContext';
 import { checkAIServiceAvailability, testAIService } from '../utils/aiUtils';
+import OLLAMA_API_HOST from '../config/apiConfig';
 
 const AIAdvisorBox = ({ userHealthData, selectedMetric, onError }) => {
   const { theme } = useTheme();
@@ -30,7 +31,7 @@ const AIAdvisorBox = ({ userHealthData, selectedMetric, onError }) => {
       setServiceAvailable(isAvailable);
       
       if (!isAvailable) {
-        setError('AI service not available. Make sure Llama3 is running on localhost:11434.');
+        setError('AI service not available. Make sure Llama3 is running and accessible at ' + OLLAMA_API_HOST + '.');
         if (onError) onError(new Error('AI service not available'));
       } else {
         // Test the service
@@ -112,7 +113,7 @@ const AIAdvisorBox = ({ userHealthData, selectedMetric, onError }) => {
         Format your response in a friendly, conversational tone.
         Do not include numerical recommendations unless they are well-established in medical literature.`;
         
-      const response = await axios.post('http://localhost:11434/api/generate', {
+      const response = await axios.post(`${OLLAMA_API_HOST}/api/generate`, {
         model: 'llama3',
         prompt: systemPrompt,
         stream: false,
@@ -185,7 +186,7 @@ const AIAdvisorBox = ({ userHealthData, selectedMetric, onError }) => {
         
         If their question is not related to health, politely state that you can only advise on health matters.`;
         
-      const response = await axios.post('http://localhost:11434/api/generate', {
+      const response = await axios.post(`${OLLAMA_API_HOST}/api/generate`, {
         model: 'llama3',
         prompt: systemPrompt,
         stream: false,
@@ -220,7 +221,7 @@ const AIAdvisorBox = ({ userHealthData, selectedMetric, onError }) => {
       setServiceAvailable(isAvailable);
       
       if (!isAvailable) {
-        setError('AI service not available. Make sure Llama3 is running on localhost:11434.');
+        setError('AI service not available. Make sure Llama3 is running and accessible at ' + OLLAMA_API_HOST + '.');
         if (onError) onError(new Error('AI service not available'));
       } else {
         // If service is available, generate insights

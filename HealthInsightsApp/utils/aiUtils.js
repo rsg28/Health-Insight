@@ -1,4 +1,5 @@
 import axios from 'axios';
+import OLLAMA_API_HOST from '../config/apiConfig';
 
 /**
  * Check if the AI model service is available
@@ -6,7 +7,7 @@ import axios from 'axios';
  * @param {string} baseUrl - The base URL of the AI service
  * @returns {Promise<boolean>} - True if the service is available, false otherwise
  */
-export const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl = 'http://localhost:11434') => {
+export const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl = OLLAMA_API_HOST) => {
   try {
     // Try to get the list of models from the API
     const response = await axios.get(`${baseUrl}`);
@@ -32,7 +33,7 @@ export const checkAIServiceAvailability = async (modelName = 'llama3', baseUrl =
  * @param {string} baseUrl - The base URL of the AI service
  * @returns {Promise<Object>} - Result object with success and response props
  */
-export const testAIService = async (modelName = 'llama3', baseUrl = 'http://localhost:11434') => {
+export const testAIService = async (modelName = 'llama3', baseUrl = OLLAMA_API_HOST) => {
   try {
     const response = await axios.post(`${baseUrl}/api/generate`, {
       model: modelName,
