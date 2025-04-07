@@ -26,6 +26,7 @@ import ConfidenceIndicator from '../components/ConfidenceIndicator';
 import ContextInsights from '../components/ContextInsights';
 import { saveUserFeedback } from '../utils/storage';
 import { useTheme } from '../utils/ThemeContext';
+import AIAdvisorBox from '../components/AIAdvisorBox';
 
 const ChartsScreen = ({ route, navigation }) => {
   const { theme, isDarkMode } = useTheme();
@@ -39,6 +40,7 @@ const ChartsScreen = ({ route, navigation }) => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoContent, setInfoContent] = useState('');
   const [contextInsights, setContextInsights] = useState([]);
+  const [aiAdvisorError, setAiAdvisorError] = useState(null);
 
   // Load data on component mount
   useEffect(() => {
@@ -163,6 +165,12 @@ const ChartsScreen = ({ route, navigation }) => {
   const handleShowInfo = (content) => {
     setInfoContent(content);
     setShowInfoModal(true);
+  };
+
+  const handleAIAdvisorError = (error) => {
+    console.error('AI Advisor error:', error);
+    setAiAdvisorError(error.message || 'Connection to AI service failed');
+    // Could show a toast or alert here if desired
   };
 
   return (
@@ -370,6 +378,21 @@ const ChartsScreen = ({ route, navigation }) => {
                   metric={selectedMetric} 
                 />
               </View>
+            )}
+            
+            {/* AI Advisor Box */}
+            <View style={[styles.insightCard, { marginTop: 16 }]}>
+              <AIAdvisorBox 
+                userHealthData={healthData}
+                selectedMetric={selectedMetric}
+                onError={handleAIAdvisorError}
+              />
+            </View>
+
+            {aiAdvisorError && (
+              <Text style={styles.errorText}>
+                Note: {aiAdvisorError}
+              </Text>
             )}
           </View>
         )}
@@ -656,6 +679,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '500',
     fontSize: 16,
+  },
+  errorText: {
+    fontSize: 12,
+    color: theme.colors.error,
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+    fontStyle: 'italic',
   },
 });
 
