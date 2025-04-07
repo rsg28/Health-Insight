@@ -1,9 +1,9 @@
 const axios = require('axios');
 
 // Configuration
-const LOCALHOST_URL = 'http://localhost:8080';
+const LOCALHOST_URL = 'http://localhost:12434';
 const NETWORK_IP = '209.87.57.234';
-const NETWORK_URL = `http://${NETWORK_IP}:8080`;
+const NETWORK_URL = `http://${NETWORK_IP}:12434`;
 const ORIGINAL_OLLAMA_URL = 'http://localhost:11434';
 
 // ANSI color codes for better readability
@@ -139,7 +139,7 @@ async function runDiagnostics() {
   if (!networkProxyOk && localProxyOk) {
     console.log(`\n${colors.yellow}⚠ Network proxy failed but local proxy works.${colors.reset}`);
     console.log(`  This might indicate a network/firewall issue.`);
-    console.log(`  Check if port 8080 is open in your firewall.`);
+    console.log(`  Check if port 12434 is open in your firewall.`);
     console.log(`  Verify your network IP (${NETWORK_IP}) is correct.`);
   }
   
@@ -188,7 +188,7 @@ async function runDiagnostics() {
     
     if (localProxyOk && !networkProxyOk) {
       console.log(`\n${colors.cyan}Troubleshooting Network Access:${colors.reset}`);
-      console.log(`  1. Check your firewall settings for port 8080`);
+      console.log(`  1. Check your firewall settings for port 12434`);
       console.log(`  2. Verify the IP address is correct (currently using ${NETWORK_IP})`);
       console.log(`  3. Try accessing from another device on the same network`);
     }

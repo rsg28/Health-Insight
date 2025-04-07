@@ -4,7 +4,7 @@ services:
   ollama-proxy:
     image: nginx:alpine
     ports:
-      - "8080:80"  # Expose on port 8080 of your computer
+      - "12434:80"  # Changed from 8080 to 12434 to avoid conflicts
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     restart: unless-stopped

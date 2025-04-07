@@ -1,5 +1,6 @@
 @echo off
 echo Restarting Ollama Docker Proxy...
+echo Port changed from 8080 to 12434 to avoid university network conflicts
 
 REM Stop any existing containers
 docker-compose down
@@ -17,4 +18,5 @@ node checkOllamaProxy.js
 
 echo.
 echo Restart process completed.
+echo Your Ollama server should now be accessible at http://YOUR-IP:12434
 pause 
