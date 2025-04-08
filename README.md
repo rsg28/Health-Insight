@@ -18,7 +18,6 @@ The application leverages local AI processing through Ollama to analyze health d
 - React Native environment setup
 - Docker Desktop installed and running (must be open before setup)
 - Ollama installed on your computer
-- Cellphone and Laptop must be connected to same WIFI !
 
 ## Setup Instructions
 
