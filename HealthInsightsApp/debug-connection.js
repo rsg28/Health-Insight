@@ -6,7 +6,7 @@
 const axios = require('axios');
 
 // Use the same URL that your app uses
-const API_URL = 'http://192.168.1.66:12434';
+const API_URL = 'http://192.75.242.180:12434';
 
 // This function makes a GET request to the root endpoint
 async function testRootEndpoint() {
