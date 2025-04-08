@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // Configuration
 const LOCALHOST_URL = 'http://localhost:12434';
-const NETWORK_IP = '209.87.57.234';
+const NETWORK_IP = '192.168.1.66';
 const NETWORK_URL = `http://${NETWORK_IP}:12434`;
 const ORIGINAL_OLLAMA_URL = 'http://localhost:11434';
 
