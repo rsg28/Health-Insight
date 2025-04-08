@@ -70,6 +70,62 @@ const HowItWorksScreen = ({ navigation }) => {
         </View>
         
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Local AI Processing with Ollama</Text>
+          <Text style={styles.sectionText}>
+            Health Insights uses Ollama, a powerful local AI framework, to generate personalized health insights 
+            without compromising your privacy.
+          </Text>
+          
+          <View style={styles.insightTypeContainer}>
+            <View style={[styles.insightTypeIcon, { backgroundColor: '#E0F7FA' }]}>
+              <Ionicons name="laptop" size={24} color="#00ACC1" />
+            </View>
+            <View style={styles.insightTypeContent}>
+              <Text style={styles.insightTypeTitle}>On-Device Processing</Text>
+              <Text style={styles.insightTypeText}>
+                Unlike most health apps, our AI runs completely on your computer - not on remote servers. 
+                This means your sensitive health data never leaves your local network.
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.insightTypeContainer}>
+            <View style={[styles.insightTypeIcon, { backgroundColor: '#E8F5E9' }]}>
+              <Ionicons name="shield" size={24} color="#43A047" />
+            </View>
+            <View style={styles.insightTypeContent}>
+              <Text style={styles.insightTypeTitle}>Privacy-First Architecture</Text>
+              <Text style={styles.insightTypeText}>
+                The app communicates with Ollama through a secure proxy that keeps all communication 
+                within your home network, creating a privacy boundary that ensures your data remains under your control.
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.insightTypeContainer}>
+            <View style={[styles.insightTypeIcon, { backgroundColor: '#FFF3E0' }]}>
+              <Ionicons name="analytics" size={24} color="#EF6C00" />
+            </View>
+            <View style={styles.insightTypeContent}>
+              <Text style={styles.insightTypeTitle}>Insight Generation Process</Text>
+              <Text style={styles.insightTypeText}>
+                When generating health insights, your data is securely sent from your phone to the Ollama service
+                running on your computer. The AI analyzes patterns in your metrics and generates personalized
+                recommendations.
+              </Text>
+            </View>
+          </View>
+          
+          <View style={styles.bulletPoint}>
+            <Ionicons name="information-circle" size={16} color={theme.colors.primary} />
+            <Text style={styles.bulletText}>
+              While local AI processing may not match the capabilities of cloud-based systems, this tradeoff significantly 
+              enhances your privacy and data security.
+            </Text>
+          </View>
+        </View>
+        
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Confidence Levels</Text>
           <Text style={styles.sectionText}>
             Each insight has a confidence indicator showing how reliable we believe
@@ -91,6 +147,11 @@ const HowItWorksScreen = ({ navigation }) => {
             <Text style={styles.bulletText}>The time period covered by your data</Text>
           </View>
           
+          <View style={styles.bulletPoint}>
+            <Ionicons name="checkmark-circle" size={16} color={theme.colors.primary} />
+            <Text style={styles.bulletText}>The AI model's confidence in its analysis</Text>
+          </View>
+          
           <Text style={styles.sectionText}>
             Low confidence insights are still shown but should be considered preliminary
             until more data is available.
@@ -110,7 +171,7 @@ const HowItWorksScreen = ({ navigation }) => {
           
           <View style={styles.bulletPoint}>
             <Ionicons name="shield-checkmark" size={16} color={theme.colors.primary} />
-            <Text style={styles.bulletText}>No data is transmitted to any servers</Text>
+            <Text style={styles.bulletText}>AI processing happens on your local network, not on remote servers</Text>
           </View>
           
           <View style={styles.bulletPoint}>
@@ -160,6 +221,11 @@ const HowItWorksScreen = ({ navigation }) => {
           <View style={styles.bulletPoint}>
             <Ionicons name="alert-circle" size={16} color="#e74c3c" />
             <Text style={styles.bulletText}>Insights are based on your self-reported data only</Text>
+          </View>
+          
+          <View style={styles.bulletPoint}>
+            <Ionicons name="alert-circle" size={16} color="#e74c3c" />
+            <Text style={styles.bulletText}>Local AI models may have limited capabilities compared to cloud services</Text>
           </View>
           
           <View style={styles.bulletPoint}>
