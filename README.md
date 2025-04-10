@@ -162,3 +162,6 @@ To test the connection to the Ollama server:
    - macOS/Linux: Run `cd HealthInsightsApp && node debug-connection.js`
 
 The script will show detailed diagnostic information to help identify connection issues.
+
+
+Great!
